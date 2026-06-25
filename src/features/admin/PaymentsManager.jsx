@@ -186,7 +186,7 @@ export default function PaymentsManager() {
                   <td className="py-3 pr-4 text-gray-200">{reg.playerName}</td>
                   <td className="py-3 pr-4 text-gray-300">{reg.playerNick}</td>
                   <td className="py-3 pr-4 text-gray-300">{reg.disciplineName}</td>
-                  <td className="py-3 pr-4 text-gray-300">${reg.amount.toFixed(2)}</td>
+                  <td className="py-3 pr-4 text-gray-300">${(reg.amount || 0).toFixed(2)}</td>
                   <td className="py-3 pr-4">
                     <StatusBadge status={reg.paymentStatus} />
                   </td>

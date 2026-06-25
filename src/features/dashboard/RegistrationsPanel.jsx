@@ -166,7 +166,7 @@ export default function RegistrationsPanel() {
                 {registrations.map((reg) => (
                   <tr key={reg.id} className="border-b border-gray-800">
                     <td className="py-3 pr-4 text-gray-200">{reg.disciplineName}</td>
-                    <td className="py-3 pr-4 text-gray-300">${reg.amount.toFixed(2)}</td>
+                    <td className="py-3 pr-4 text-gray-300">${(reg.amount || 0).toFixed(2)}</td>
                     <td className="py-3 pr-4">
                       <StatusBadge status={reg.paymentStatus} />
                     </td>

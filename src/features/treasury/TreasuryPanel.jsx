@@ -141,7 +141,7 @@ export default function TreasuryPanel() {
                         <td className="py-3 px-4">
                           <GameBadge name={discipline?.name || reg.disciplineId} slug={discipline?.slug || 'default'} />
                         </td>
-                        <td className="py-3 px-4">${reg.amount.toFixed(2)}</td>
+                        <td className="py-3 px-4">${(reg.amount || 0).toFixed(2)}</td>
                         <td className="py-3 px-4">
                           <StatusBadge status={reg.paymentStatus} />
                         </td>
