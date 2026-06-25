@@ -1,4 +1,6 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { db } from '../../firebase/client';
 import { calculateRevenueByDiscipline, getPaymentStats } from '../../lib/treasury';
 import { exportPlayersCSV, exportRevenueCSV } from '../../lib/csv';
 import HudCard from '../../components/ui/HudCard';
@@ -9,16 +11,7 @@ import SectionTitle from '../../components/ui/SectionTitle';
 import GameBadge from '../../components/ui/GameBadge';
 import { DollarSign, Download, Filter, BarChart3, Users } from 'lucide-react';
 
-const SEED_REGISTRATIONS = [
-  { id: '1', userId: 'u1', disciplineId: 'clash-royale', playerNick: 'Player1', teamName: '', amount: 2, paymentStatus: 'approved', paymentReference: 'REF001', createdAt: '2025-07-01' },
-  { id: '2', userId: 'u2', disciplineId: 'league-of-legends', playerNick: 'Player2', teamName: 'Team Alpha', amount: 2, paymentStatus: 'pending', paymentReference: '', createdAt: '2025-07-02' },
-  { id: '3', userId: 'u3', disciplineId: 'fortnite', playerNick: 'Player3', teamName: '', amount: 2, paymentStatus: 'approved', paymentReference: 'REF003', createdAt: '2025-07-02' },
-  { id: '4', userId: 'u4', disciplineId: 'fifa-26', playerNick: 'Player4', teamName: '', amount: 2, paymentStatus: 'rejected', paymentReference: '', createdAt: '2025-07-03' },
-  { id: '5', userId: 'u5', disciplineId: 'clash-royale', playerNick: 'Player5', teamName: '', amount: 2, paymentStatus: 'approved', paymentReference: 'REF005', createdAt: '2025-07-03' },
-  { id: '6', userId: 'u6', disciplineId: 'mortal-kombat', playerNick: 'Player6', teamName: '', amount: 2, paymentStatus: 'pending', paymentReference: '', createdAt: '2025-07-04' },
-  { id: '7', userId: 'u7', disciplineId: 'dragon-ball', playerNick: 'Player7', teamName: 'Team Beta', amount: 2, paymentStatus: 'approved', paymentReference: 'REF007', createdAt: '2025-07-04' },
-  { id: '8', userId: 'u8', disciplineId: 'minecraft', playerNick: 'Player8', teamName: '', amount: 2, paymentStatus: 'approved', paymentReference: 'REF008', createdAt: '2025-07-05' },
-];
+
 
 const SEED_DISCIPLINES = [
   { id: 'clash-royale', name: 'Clash Royale', slug: 'clash-royale' },
@@ -31,27 +24,41 @@ const SEED_DISCIPLINES = [
 ];
 
 export default function TreasuryPanel() {
+  const [registrations, setRegistrations] = useState([]);
   const [filterDiscipline, setFilterDiscipline] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
 
+  useEffect(() => {
+    const q = query(collection(db, 'registrations'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setRegistrations(data);
+    });
+    return () => unsubscribe();
+  }, []);
+
   const filteredRegistrations = useMemo(() => {
-    return SEED_REGISTRATIONS.filter(reg => {
+    return registrations.filter(reg => {
+      const status = reg.paymentStatus || 'pending';
       const matchDiscipline = filterDiscipline ? reg.disciplineId === filterDiscipline : true;
-      const matchStatus = filterStatus ? reg.paymentStatus === filterStatus : true;
+      const matchStatus = filterStatus ? status === filterStatus : true;
       return matchDiscipline && matchStatus;
     });
-  }, [filterDiscipline, filterStatus]);
+  }, [filterDiscipline, filterStatus, registrations]);
 
-  const stats = getPaymentStats(SEED_REGISTRATIONS);
-  const revenueByDiscipline = calculateRevenueByDiscipline(SEED_REGISTRATIONS, SEED_DISCIPLINES);
+  const stats = getPaymentStats(registrations);
+  const revenueByDiscipline = calculateRevenueByDiscipline(registrations, SEED_DISCIPLINES);
   const totalRevenue = revenueByDiscipline.reduce((sum, item) => sum + item.total, 0);
 
   const handleExportPlayers = () => {
-    exportPlayersCSV(SEED_REGISTRATIONS, SEED_DISCIPLINES);
+    exportPlayersCSV(registrations, SEED_DISCIPLINES);
   };
 
   const handleExportRevenue = () => {
-    exportRevenueCSV(SEED_REGISTRATIONS, SEED_DISCIPLINES);
+    exportRevenueCSV(registrations, SEED_DISCIPLINES);
   };
 
   return (
@@ -143,7 +150,7 @@ export default function TreasuryPanel() {
                         </td>
                         <td className="py-3 px-4">${(reg.amount || 0).toFixed(2)}</td>
                         <td className="py-3 px-4">
-                          <StatusBadge status={reg.paymentStatus} />
+                          <StatusBadge status={reg.paymentStatus || 'pending'} />
                         </td>
                       </tr>
                     );

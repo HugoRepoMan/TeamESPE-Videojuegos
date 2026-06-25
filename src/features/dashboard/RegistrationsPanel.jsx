@@ -98,10 +98,11 @@ export default function RegistrationsPanel() {
       
       // 2. Save registration doc
       const docData = {
+        ...formData,
         ...result.data,
         paymentReceiptUrl: receiptUrl,
         createdAt: new Date(), // using local date because serverTimestamp() makes it hard to parse immediately locally if needed
-        disciplineName: discipline?.name || selectedDiscipline,
+        playerName: user?.displayName || user?.email || 'Jugador',
       };
       
       await addDoc(collection(db, 'registrations'), docData);

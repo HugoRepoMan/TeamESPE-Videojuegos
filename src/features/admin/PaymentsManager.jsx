@@ -39,8 +39,9 @@ export default function PaymentsManager() {
   }, []);
 
   const filtered = registrations.filter((reg) => {
+    const status = reg.paymentStatus || 'pending';
     if (filterDiscipline && reg.disciplineId !== filterDiscipline) return false;
-    if (filterStatus && reg.paymentStatus !== filterStatus) return false;
+    if (filterStatus && status !== filterStatus) return false;
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       const matchesSearch =
@@ -181,14 +182,16 @@ export default function PaymentsManager() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((reg) => (
+              {filtered.map((reg) => {
+                const status = reg.paymentStatus || 'pending';
+                return (
                 <tr key={reg.id} className="border-b border-gray-800 hover:bg-gray-800/30 transition-colors">
-                  <td className="py-3 pr-4 text-gray-200">{reg.playerName}</td>
+                  <td className="py-3 pr-4 text-gray-200">{reg.playerName || 'Jugador'}</td>
                   <td className="py-3 pr-4 text-gray-300">{reg.playerNick}</td>
-                  <td className="py-3 pr-4 text-gray-300">{reg.disciplineName}</td>
+                  <td className="py-3 pr-4 text-gray-300">{reg.disciplineName || reg.disciplineId}</td>
                   <td className="py-3 pr-4 text-gray-300">${(reg.amount || 0).toFixed(2)}</td>
                   <td className="py-3 pr-4">
-                    <StatusBadge status={reg.paymentStatus} />
+                    <StatusBadge status={status} />
                   </td>
                   <td className="py-3 pr-4 text-gray-400 font-mono text-xs">
                     {reg.paymentReceiptUrl ? (
@@ -201,7 +204,7 @@ export default function PaymentsManager() {
                     )}
                   </td>
                   <td className="py-3">
-                    {reg.paymentStatus === 'pending' ? (
+                    {status === 'pending' ? (
                       <div className="flex gap-2">
                         <button
                           onClick={() => handleAction(reg.id, 'approve')}
@@ -225,7 +228,7 @@ export default function PaymentsManager() {
                     )}
                   </td>
                 </tr>
-              ))}
+              )})}
               {filtered.length === 0 && (
                 <tr>
                   <td colSpan={7} className="py-8 text-center text-gray-500">
