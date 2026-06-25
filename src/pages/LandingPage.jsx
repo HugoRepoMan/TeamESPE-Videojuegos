@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { Gamepad2, Trophy, Calendar, Shield, ChevronRight, ChevronDown, Swords, Users, DollarSign, Clock, Target, Zap, Timer } from 'lucide-react';
+import { Gamepad2, Trophy, Calendar, Shield, ChevronRight, ChevronDown, Swords, Users, DollarSign, Clock, Target, Zap, Timer, LogOut, User } from 'lucide-react';
+import { useAuth } from '../features/auth/useAuth';
 import HudCard from '../components/ui/HudCard';
 import GameBadge from '../components/ui/GameBadge';
 import SectionTitle from '../components/ui/SectionTitle';
@@ -150,6 +151,8 @@ function RuleAccordion({ title, content, index }) {
 }
 
 export default function LandingPage() {
+  const { user, isAdmin, logout } = useAuth();
+
   return (
     <div className="min-h-screen bg-hud-bg">
 
@@ -167,15 +170,35 @@ export default function LandingPage() {
             <Link to="/brackets" className="hover:text-hud-accent transition-colors text-hud-gold">Ver Llaves</Link>
           </div>
           <div className="flex items-center gap-3">
-            <Link
-              to="/login"
-              className="text-sm font-bold uppercase tracking-wider text-hud-text-secondary hover:text-hud-accent transition-colors"
-            >
-              Ingresar
-            </Link>
-            <Link to="/register">
-              <DiagonalButton>Registro</DiagonalButton>
-            </Link>
+            {user ? (
+              <>
+                <Link to={isAdmin ? "/admin" : "/dashboard"}>
+                  <DiagonalButton className="!px-4 !py-2 text-xs flex items-center gap-2">
+                    <User size={14} />
+                    Mi Panel
+                  </DiagonalButton>
+                </Link>
+                <button
+                  onClick={() => logout()}
+                  className="text-hud-text-secondary hover:text-hud-error transition-colors p-2"
+                  title="Cerrar Sesion"
+                >
+                  <LogOut size={18} />
+                </button>
+              </>
+            ) : (
+              <>
+                <Link
+                  to="/login"
+                  className="text-sm font-bold uppercase tracking-wider text-hud-text-secondary hover:text-hud-accent transition-colors"
+                >
+                  Ingresar
+                </Link>
+                <Link to="/register">
+                  <DiagonalButton>Registro</DiagonalButton>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </nav>

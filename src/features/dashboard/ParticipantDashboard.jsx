@@ -17,7 +17,7 @@ const SEED_STATS = {
 };
 
 export default function ParticipantDashboard() {
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const [stats] = useState(SEED_STATS);
   const [showProfileForm, setShowProfileForm] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -144,6 +144,12 @@ export default function ParticipantDashboard() {
       <HudCard className="mb-8">
         <h3 className="text-lg font-semibold text-gray-200 mb-4">Acciones Rapidas</h3>
         <div className="flex flex-wrap gap-4">
+          {isAdmin && (
+            <DiagonalButton href="/admin" className="bg-red-900 border-red-500">
+              <Swords className="w-4 h-4 mr-2" />
+              Panel de Administrador
+            </DiagonalButton>
+          )}
           <DiagonalButton href="/dashboard/registrations">
             <Gamepad2 className="w-4 h-4 mr-2" />
             Inscribirse
