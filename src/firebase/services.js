@@ -11,8 +11,9 @@ import {
   serverTimestamp,
   orderBy,
 } from 'firebase/firestore';
-import { ref, set, onValue } from 'firebase/database';
-import { db, rtdb } from './client';
+import { ref as rtdbRef, set, onValue } from 'firebase/database';
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, rtdb, storage } from './client';
 import { sanitizeString, sanitizeDocId } from '../lib/sanitize';
 import {
   userProfileSchema,
@@ -85,6 +86,22 @@ export async function createRegistration(data) {
     createdAt: serverTimestamp(),
   });
   return docRef.id;
+}
+
+/**
+ * Upload a payment receipt to Firebase Storage.
+ * @param {File} file - The file to upload.
+ * @param {string} userId - The user's ID for folder organization.
+ * @returns {Promise<string>} The public download URL.
+ */
+export async function uploadPaymentReceipt(file, userId) {
+  if (!file) throw new Error("No file provided");
+  const extension = file.name.split('.').pop();
+  const fileName = `receipts/${userId}/${Date.now()}.${extension}`;
+  const fileRef = storageRef(storage, fileName);
+  
+  await uploadBytes(fileRef, file);
+  return await getDownloadURL(fileRef);
 }
 
 /**
@@ -298,7 +315,7 @@ export async function createTreasuryEntry(data) {
  */
 export async function updateOverlay(data) {
   const parsed = overlayUpdateSchema.parse(data);
-  await set(ref(rtdb, 'liveOverlay'), parsed);
+  await set(rtdbRef(rtdb, 'liveOverlay'), parsed);
 }
 
 /**
@@ -307,8 +324,8 @@ export async function updateOverlay(data) {
  * @returns {function} Unsubscribe function.
  */
 export function subscribeToOverlay(callback) {
-  const overlayRef = ref(rtdb, 'liveOverlay');
-  const unsubscribe = onValue(overlayRef, (snapshot) => {
+  const overlayNodeRef = rtdbRef(rtdb, 'liveOverlay');
+  const unsubscribe = onValue(overlayNodeRef, (snapshot) => {
     callback(snapshot.val());
   });
   return unsubscribe;

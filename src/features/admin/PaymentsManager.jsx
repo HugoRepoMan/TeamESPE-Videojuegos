@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { doc, updateDoc, collection, addDoc } from 'firebase/firestore';
-import { Check, X, Filter, Search } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { doc, updateDoc, collection, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { Check, X, Filter, Search, FileText } from 'lucide-react';
 import { db } from '../../firebase/client';
 import { paymentApprovalSchema } from '../../schemas';
 import HudCard from '../../components/ui/HudCard';
@@ -18,22 +18,25 @@ const DISCIPLINES = [
   { id: 'mortal-kombat', name: 'Mortal Kombat' },
 ];
 
-const INITIAL_REGISTRATIONS = [
-  { id: 'r1', userId: 'u1', playerName: 'Juan Perez', playerNick: 'JuanGamer', disciplineId: 'clash-royale', disciplineName: 'Clash Royale', amount: 2, paymentStatus: 'pending', paymentReference: 'REF-001' },
-  { id: 'r2', userId: 'u2', playerName: 'Maria Lopez', playerNick: 'MariaFury', disciplineId: 'league-of-legends', disciplineName: 'League of Legends', amount: 2, paymentStatus: 'pending', paymentReference: 'REF-002' },
-  { id: 'r3', userId: 'u3', playerName: 'Carlos Ruiz', playerNick: 'CarlosX', disciplineId: 'fortnite', disciplineName: 'Fortnite', amount: 2, paymentStatus: 'approved', paymentReference: 'REF-003' },
-  { id: 'r4', userId: 'u4', playerName: 'Ana Torres', playerNick: 'AnaStrike', disciplineId: 'fifa-26', disciplineName: 'FIFA 26', amount: 2, paymentStatus: 'rejected', paymentReference: '' },
-  { id: 'r5', userId: 'u5', playerName: 'Luis Garcia', playerNick: 'LuisK', disciplineId: 'mortal-kombat', disciplineName: 'Mortal Kombat', amount: 2, paymentStatus: 'pending', paymentReference: 'REF-005' },
-  { id: 'r6', userId: 'u6', playerName: 'Elena Castro', playerNick: 'ElenaGG', disciplineId: 'dragon-ball', disciplineName: 'Dragon Ball Sparking Zero', amount: 2, paymentStatus: 'approved', paymentReference: 'REF-006' },
-];
-
 export default function PaymentsManager() {
-  const [registrations, setRegistrations] = useState(INITIAL_REGISTRATIONS);
+  const [registrations, setRegistrations] = useState([]);
   const [filterDiscipline, setFilterDiscipline] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
   const [searchTerm, setSearchTerm] = useState('');
   const [processing, setProcessing] = useState(null);
   const [message, setMessage] = useState('');
+
+  useEffect(() => {
+    const q = query(collection(db, 'registrations'), orderBy('createdAt', 'desc'));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setRegistrations(data);
+    });
+    return () => unsubscribe();
+  }, []);
 
   const filtered = registrations.filter((reg) => {
     if (filterDiscipline && reg.disciplineId !== filterDiscipline) return false;
@@ -41,9 +44,9 @@ export default function PaymentsManager() {
     if (searchTerm) {
       const term = searchTerm.toLowerCase();
       const matchesSearch =
-        reg.playerName.toLowerCase().includes(term) ||
-        reg.playerNick.toLowerCase().includes(term) ||
-        reg.paymentReference.toLowerCase().includes(term);
+        (reg.playerName || '').toLowerCase().includes(term) ||
+        (reg.playerNick || '').toLowerCase().includes(term) ||
+        (reg.paymentReference || '').toLowerCase().includes(term);
       if (!matchesSearch) return false;
     }
     return true;
@@ -188,7 +191,14 @@ export default function PaymentsManager() {
                     <StatusBadge status={reg.paymentStatus} />
                   </td>
                   <td className="py-3 pr-4 text-gray-400 font-mono text-xs">
-                    {reg.paymentReference || '-'}
+                    {reg.paymentReceiptUrl ? (
+                      <a href={reg.paymentReceiptUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-1 text-red-400 hover:text-red-300 transition-colors">
+                        <FileText size={14} />
+                        Ver Comprobante
+                      </a>
+                    ) : (
+                      reg.paymentReference || '-'
+                    )}
                   </td>
                   <td className="py-3">
                     {reg.paymentStatus === 'pending' ? (

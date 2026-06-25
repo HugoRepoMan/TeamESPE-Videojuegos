@@ -1,7 +1,8 @@
-import { useState } from 'react';
-import { collection, addDoc } from 'firebase/firestore';
-import { Gamepad2, CreditCard, Info } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import { collection, addDoc, query, where, onSnapshot } from 'firebase/firestore';
+import { Gamepad2, CreditCard, Info, UploadCloud } from 'lucide-react';
 import { db } from '../../firebase/client';
+import { uploadPaymentReceipt } from '../../firebase/services';
 import { useAuth } from '../auth/useAuth';
 import { registrationSchema } from '../../schemas';
 import HudCard from '../../components/ui/HudCard';
@@ -21,28 +22,9 @@ const DISCIPLINES = [
 
 const COST_PER_DISCIPLINE = 2.0;
 
-const SEED_REGISTRATIONS = [
-  {
-    id: 'reg1',
-    disciplineId: 'clash-royale',
-    disciplineName: 'Clash Royale',
-    paymentStatus: 'approved',
-    amount: 2,
-    createdAt: '2025-07-01',
-  },
-  {
-    id: 'reg2',
-    disciplineId: 'fortnite',
-    disciplineName: 'Fortnite',
-    paymentStatus: 'pending',
-    amount: 2,
-    createdAt: '2025-07-02',
-  },
-];
-
 export default function RegistrationsPanel() {
   const { user } = useAuth();
-  const [registrations, setRegistrations] = useState(SEED_REGISTRATIONS);
+  const [registrations, setRegistrations] = useState([]);
   const [selectedDiscipline, setSelectedDiscipline] = useState('');
   const [playerNick, setPlayerNick] = useState('');
   const [teamName, setTeamName] = useState('');
@@ -50,6 +32,22 @@ export default function RegistrationsPanel() {
   const [submitting, setSubmitting] = useState(false);
   const [showPaymentInfo, setShowPaymentInfo] = useState(false);
   const [submitMessage, setSubmitMessage] = useState('');
+  const [receiptFile, setReceiptFile] = useState(null);
+
+  useEffect(() => {
+    if (!user) return;
+    const q = query(collection(db, 'registrations'), where('userId', '==', user.uid));
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const data = snapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data(),
+        // Format the date for the table. It might be a Timestamp.
+        createdAt: doc.data().createdAt?.toDate().toISOString().split('T')[0] || new Date().toISOString().split('T')[0]
+      }));
+      setRegistrations(data);
+    });
+    return () => unsubscribe();
+  }, [user]);
 
   async function handleRegister(e) {
     e.preventDefault();
@@ -66,6 +64,7 @@ export default function RegistrationsPanel() {
       amount: COST_PER_DISCIPLINE,
       paymentStatus: 'pending',
       paymentReference: '',
+      disciplineName: discipline?.name || selectedDiscipline,
     };
 
     const result = registrationSchema.safeParse(formData);
@@ -76,6 +75,11 @@ export default function RegistrationsPanel() {
         fieldErrors[field] = issue.message;
       }
       setFormErrors(fieldErrors);
+      return;
+    }
+    
+    if (!receiptFile) {
+      setFormErrors({ ...formErrors, receiptFile: "Por favor, adjunte su comprobante de pago." });
       return;
     }
 
@@ -89,30 +93,36 @@ export default function RegistrationsPanel() {
 
     setSubmitting(true);
     try {
+      // 1. Upload receipt to storage
+      const receiptUrl = await uploadPaymentReceipt(receiptFile, user.uid);
+      
+      // 2. Save registration doc
       const docData = {
         ...result.data,
-        createdAt: new Date().toISOString(),
+        paymentReceiptUrl: receiptUrl,
+        createdAt: new Date(), // using local date because serverTimestamp() makes it hard to parse immediately locally if needed
+        disciplineName: discipline?.name || selectedDiscipline,
       };
+      
       await addDoc(collection(db, 'registrations'), docData);
 
-      const newReg = {
-        id: `reg-${Date.now()}`,
-        disciplineId: selectedDiscipline,
-        disciplineName: discipline?.name || selectedDiscipline,
-        paymentStatus: 'pending',
-        amount: COST_PER_DISCIPLINE,
-        createdAt: new Date().toISOString().split('T')[0],
-      };
-      setRegistrations((prev) => [...prev, newReg]);
       setSelectedDiscipline('');
       setPlayerNick('');
       setTeamName('');
+      setReceiptFile(null);
       setShowPaymentInfo(true);
       setSubmitMessage('Inscripcion registrada exitosamente.');
-    } catch {
+    } catch (error) {
+      console.error(error);
       setSubmitMessage('Error al registrar la inscripcion. Intente de nuevo.');
     } finally {
       setSubmitting(false);
+    }
+  }
+
+  function handleFileChange(e) {
+    if (e.target.files && e.target.files[0]) {
+      setReceiptFile(e.target.files[0]);
     }
   }
 
@@ -219,10 +229,28 @@ export default function RegistrationsPanel() {
               placeholder="Nombre del equipo"
             />
           </div>
-          <div className="bg-gray-800/50 border border-gray-700 p-3">
+          <div className="bg-gray-800/50 border border-gray-700 p-4 space-y-4">
             <p className="text-sm text-gray-300">
               Costo por disciplina: <span className="text-red-400 font-bold">${COST_PER_DISCIPLINE.toFixed(2)}</span>
             </p>
+            <div className="flex flex-col md:flex-row gap-4 items-start">
+              <div className="flex-shrink-0 bg-white p-2 rounded w-40 h-40 flex items-center justify-center">
+                <img src="/qr-pago.png" alt="QR de Pago" className="max-w-full max-h-full object-contain" onError={(e) => { e.target.src = 'https://via.placeholder.com/150?text=Sube+qr-pago.png'; }} />
+              </div>
+              <div className="flex-1 space-y-2">
+                <p className="text-sm text-gray-400">
+                  Escanea el codigo QR para realizar el pago o deposita directamente en la cuenta. Luego, adjunta el comprobante aqui:
+                </p>
+                <label className="flex items-center gap-2 cursor-pointer border border-gray-600 bg-gray-900 px-3 py-2 text-sm text-gray-300 hover:border-red-500 transition-colors w-full">
+                  <UploadCloud size={16} className="text-red-500" />
+                  <span className="truncate">{receiptFile ? receiptFile.name : "Subir comprobante (Imagen/PDF)"}</span>
+                  <input type="file" className="hidden" accept="image/*,application/pdf" onChange={handleFileChange} />
+                </label>
+                {formErrors.receiptFile && (
+                  <p className="text-red-400 text-xs mt-1">{formErrors.receiptFile}</p>
+                )}
+              </div>
+            </div>
           </div>
           <DiagonalButton type="submit" disabled={submitting}>
             {submitting ? 'Registrando...' : 'Inscribirse'}

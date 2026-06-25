@@ -14,6 +14,7 @@ export const registrationSchema = z.object({
   disciplineId: z.string().min(1),
   playerNick: safeString(30),
   teamName: safeString(50).optional(),
+  paymentReceiptUrl: z.string().url().optional(),
 });
 
 export const paymentApprovalSchema = z.object({
