@@ -62,8 +62,7 @@ export default function PaymentsManager() {
 
     const approvalData = {
       registrationId,
-      newStatus,
-      adminNotes: '',
+      paymentStatus: newStatus,
     };
 
     const result = paymentApprovalSchema.safeParse(approvalData);
