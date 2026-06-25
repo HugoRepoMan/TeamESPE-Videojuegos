@@ -1,0 +1,18 @@
+{
+  "rules": {
+    "liveOverlay": {
+      ".read": true,
+      ".write": "auth !== null && auth.token.admin === true"
+    },
+    "bracketsLive": {
+      "$disciplineId": {
+        ".read": true,
+        ".write": "auth !== null && auth.token.admin === true"
+      }
+    },
+    "$other": {
+      ".read": false,
+      ".write": false
+    }
+  }
+}
