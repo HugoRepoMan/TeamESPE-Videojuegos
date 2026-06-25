@@ -1,15 +1,11 @@
+import { useState, useEffect } from 'react';
+import { collection, getCountFromServer, query, where, getDocs } from 'firebase/firestore';
+import { db } from '../../firebase/client';
 import { Users, DollarSign, Trophy, Layout, CreditCard, Tv } from 'lucide-react';
 import HudCard from '../../components/ui/HudCard';
 import StatCard from '../../components/ui/StatCard';
 import DiagonalButton from '../../components/ui/DiagonalButton';
 import SectionTitle from '../../components/ui/SectionTitle';
-
-const SEED_METRICS = {
-  totalPlayers: 48,
-  totalRevenue: 96.0,
-  totalRegistrations: 64,
-  pendingPayments: 12,
-};
 
 const NAV_CARDS = [
   {
@@ -39,6 +35,39 @@ const NAV_CARDS = [
 ];
 
 export default function AdminDashboard() {
+  const [metrics, setMetrics] = useState({
+    totalPlayers: 0,
+    totalRevenue: 0,
+    totalRegistrations: 0,
+    pendingPayments: 0,
+  });
+
+  useEffect(() => {
+    async function loadMetrics() {
+      try {
+        const usersSnap = await getCountFromServer(collection(db, 'users'));
+        const regsSnap = await getCountFromServer(collection(db, 'registrations'));
+        
+        const pendingQuery = query(collection(db, 'registrations'), where('paymentStatus', '==', 'pending'));
+        const pendingSnap = await getCountFromServer(pendingQuery);
+
+        const approvedQuery = query(collection(db, 'registrations'), where('paymentStatus', '==', 'approved'));
+        const approvedDocs = await getDocs(approvedQuery);
+        const revenue = approvedDocs.docs.reduce((acc, doc) => acc + (doc.data().amount || 0), 0);
+
+        setMetrics({
+          totalPlayers: usersSnap.data().count,
+          totalRegistrations: regsSnap.data().count,
+          pendingPayments: pendingSnap.data().count,
+          totalRevenue: revenue,
+        });
+      } catch (err) {
+        console.error("Error loading metrics:", err);
+      }
+    }
+    loadMetrics();
+  }, []);
+
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 p-4 md:p-8">
       <SectionTitle>Panel de Administracion</SectionTitle>
@@ -51,25 +80,25 @@ export default function AdminDashboard() {
         <StatCard
           icon={Users}
           label="Total Jugadores"
-          value={SEED_METRICS.totalPlayers}
+          value={metrics.totalPlayers}
           variant="default"
         />
         <StatCard
           icon={DollarSign}
           label="Total Recaudado"
-          value={`$${SEED_METRICS.totalRevenue.toFixed(2)}`}
+          value={`$${metrics.totalRevenue.toFixed(2)}`}
           variant="success"
         />
         <StatCard
           icon={Layout}
           label="Inscripciones Totales"
-          value={SEED_METRICS.totalRegistrations}
+          value={metrics.totalRegistrations}
           variant="info"
         />
         <StatCard
           icon={CreditCard}
           label="Pagos Pendientes"
-          value={SEED_METRICS.pendingPayments}
+          value={metrics.pendingPayments}
           variant="warning"
         />
       </div>
@@ -87,7 +116,7 @@ export default function AdminDashboard() {
                   {card.title}
                 </h3>
                 <p className="text-sm text-gray-400 mb-4">{card.description}</p>
-                <DiagonalButton href={card.href}>Acceder</DiagonalButton>
+                <DiagonalButton to={card.href}>Acceder</DiagonalButton>
               </div>
             </div>
           </HudCard>
