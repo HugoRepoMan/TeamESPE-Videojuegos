@@ -1,0 +1,21 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /receipts/{userId}/{fileName} {
+      // Un usuario solo puede crear archivos dentro de su propia carpeta
+      // y verificar que el archivo que sube sea una imagen o PDF menor a 5MB
+      allow create: if request.auth != null 
+                    && request.auth.uid == userId
+                    && request.resource.size < 5 * 1024 * 1024
+                    && request.resource.contentType.matches('image/.*|application/pdf');
+      
+      // Solo el administrador (admin==true) O el mismo usuario que lo subió pueden leerlo
+      allow read: if request.auth != null 
+                  && (request.auth.uid == userId || request.auth.token.admin == true);
+                  
+      // Los usuarios no pueden modificar ni borrar fotos de pagos (por seguridad contable)
+      // Solo el administrador podría borrar
+      allow update, delete: if request.auth != null && request.auth.token.admin == true;
+    }
+  }
+}

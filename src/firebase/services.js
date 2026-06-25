@@ -12,7 +12,8 @@ import {
   orderBy,
 } from 'firebase/firestore';
 import { ref as rtdbRef, set, onValue } from 'firebase/database';
-import { db, rtdb } from './client';
+import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
+import { db, rtdb, storage } from './client';
 import { sanitizeString, sanitizeDocId } from '../lib/sanitize';
 import {
   userProfileSchema,
@@ -88,32 +89,19 @@ export async function createRegistration(data) {
 }
 
 /**
- * Upload a payment receipt to ImgBB.
+ * Upload a payment receipt to Firebase Storage.
  * @param {File} file - The file to upload.
- * @param {string} userId - The user's ID (not used strictly for ImgBB but kept for signature).
+ * @param {string} userId - The user's ID for folder organization.
  * @returns {Promise<string>} The public download URL.
  */
 export async function uploadPaymentReceipt(file, userId) {
   if (!file) throw new Error("No file provided");
+  const extension = file.name.split('.').pop();
+  const fileName = `receipts/${userId}/${Date.now()}.${extension}`;
+  const fileRef = storageRef(storage, fileName);
   
-  const apiKey = import.meta.env.VITE_IMGBB_API_KEY;
-  if (!apiKey) throw new Error("ImgBB API key is missing");
-
-  const formData = new FormData();
-  formData.append('image', file);
-
-  const response = await fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-    method: 'POST',
-    body: formData,
-  });
-
-  const data = await response.json();
-  
-  if (!data.success) {
-    throw new Error(data.error?.message || "Failed to upload image to ImgBB");
-  }
-
-  return data.data.url;
+  await uploadBytes(fileRef, file);
+  return await getDownloadURL(fileRef);
 }
 
 /**
