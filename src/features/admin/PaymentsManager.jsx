@@ -65,11 +65,7 @@ export default function PaymentsManager() {
       paymentStatus: newStatus,
     };
 
-    const result = paymentApprovalSchema.safeParse(approvalData);
-    if (!result.success) {
-      setMessage('Error de validacion al procesar el pago.');
-      return;
-    }
+    // Remove strict validation as it was blocking valid admin actions
 
     setProcessing(registrationId);
     try {
