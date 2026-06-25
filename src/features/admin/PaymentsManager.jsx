@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { doc, updateDoc, collection, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { Check, X, Filter, Search, FileText } from 'lucide-react';
 import { db } from '../../firebase/client';
-import { paymentApprovalSchema } from '../../schemas';
 import HudCard from '../../components/ui/HudCard';
 import StatusBadge from '../../components/ui/StatusBadge';
 import DiagonalButton from '../../components/ui/DiagonalButton';
