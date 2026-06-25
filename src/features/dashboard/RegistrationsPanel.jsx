@@ -234,8 +234,8 @@ export default function RegistrationsPanel() {
               Costo por disciplina: <span className="text-red-400 font-bold">${COST_PER_DISCIPLINE.toFixed(2)}</span>
             </p>
             <div className="flex flex-col md:flex-row gap-4 items-start">
-              <div className="flex-shrink-0 bg-white p-2 rounded w-40 h-40 flex items-center justify-center">
-                <img src="/qr-pago.png" alt="QR de Pago" className="max-w-full max-h-full object-contain" onError={(e) => { e.target.src = 'https://via.placeholder.com/150?text=Sube+qr-pago.png'; }} />
+              <div className="flex-shrink-0 bg-white p-2 rounded w-40 h-40 flex items-center justify-center border border-dashed border-gray-500 text-center">
+                <img src="/qr-pago.png" alt="Sube tu imagen qr-pago.png en public/" className="max-w-full max-h-full object-contain" />
               </div>
               <div className="flex-1 space-y-2">
                 <p className="text-sm text-gray-400">
