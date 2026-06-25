@@ -58,8 +58,12 @@ export default function LoginPage() {
       await login(formData.email, formData.password);
       navigate('/dashboard', { replace: true });
     } catch (err) {
+      console.error('Login error:', err);
       const errorCode = err.code || '';
-      setFirebaseError(FIREBASE_ERRORS[errorCode] || 'Error al iniciar sesion. Intenta de nuevo.');
+      const fallbackMessage = err.message 
+        ? `Error interno (${errorCode}): ${err.message}` 
+        : 'Error al iniciar sesion. Verifica tus credenciales.';
+      setFirebaseError(FIREBASE_ERRORS[errorCode] || fallbackMessage);
     } finally {
       setSubmitting(false);
     }

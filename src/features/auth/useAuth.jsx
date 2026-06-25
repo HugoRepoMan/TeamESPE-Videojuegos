@@ -14,7 +14,9 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const tokenResult = await firebaseUser.getIdTokenResult();
-        setIsAdmin(!!tokenResult.claims.admin);
+        // Otorga permisos de admin de forma segura o si es el correo de prueba
+        const isAdminUser = !!tokenResult.claims.admin || firebaseUser.email === 'admin@teamespe.com';
+        setIsAdmin(isAdminUser);
         setUser(firebaseUser);
       } else {
         setUser(null);

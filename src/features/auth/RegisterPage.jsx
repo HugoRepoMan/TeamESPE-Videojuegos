@@ -67,8 +67,12 @@ export default function RegisterPage() {
       await register(formData.email, formData.password, formData.displayName);
       navigate('/dashboard', { replace: true });
     } catch (err) {
+      console.error('Registration error:', err);
       const errorCode = err.code || '';
-      setFirebaseError(FIREBASE_ERRORS[errorCode] || 'Error al registrar. Intenta de nuevo.');
+      const fallbackMessage = err.message 
+        ? `Error interno (${errorCode}): ${err.message}` 
+        : 'Error al registrar. Intenta de nuevo.';
+      setFirebaseError(FIREBASE_ERRORS[errorCode] || fallbackMessage);
     } finally {
       setSubmitting(false);
     }
