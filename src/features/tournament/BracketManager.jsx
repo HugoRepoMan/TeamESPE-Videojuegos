@@ -27,6 +27,7 @@ export default function BracketManager() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [formErrors, setFormErrors] = useState({});
   const [editingMatch, setEditingMatch] = useState(null);
+  const [scheduledTime, setScheduledTime] = useState('');
   const [gameScores, setGameScores] = useState({
     game1A: 0, game1B: 0,
     game2A: 0, game2B: 0,
@@ -189,6 +190,7 @@ export default function BracketManager() {
       playerBScore: playerBScoreTotal,
       bo3Games: games,
       status: winnerId ? 'completed' : match.status,
+      scheduledTime: scheduledTime || undefined,
       winnerId: winnerId || undefined,
     };
 
@@ -325,6 +327,12 @@ export default function BracketManager() {
                         </div>
                         <StatusBadge status={match.status} />
                       </div>
+                      
+                      {match.scheduledTime && (
+                        <div className="mb-2 text-xs text-yellow-400 font-semibold bg-yellow-400/10 inline-block px-2 py-0.5 rounded">
+                          {new Date(match.scheduledTime).toLocaleString()}
+                        </div>
+                      )}
 
                       {/* Players */}
                       <div className="space-y-1 mb-3">
@@ -359,6 +367,15 @@ export default function BracketManager() {
                         <div className="space-y-2">
                           {editingMatch === match.id ? (
                             <div className="space-y-2">
+                              <div className="flex flex-col gap-1 mb-2">
+                                <label className="text-xs text-gray-400">Fecha y Hora:</label>
+                                <input
+                                  type="datetime-local"
+                                  value={scheduledTime}
+                                  onChange={(e) => setScheduledTime(e.target.value)}
+                                  className="w-full bg-gray-800 border border-gray-700 text-gray-100 px-2 py-1 focus:outline-none focus:border-red-500 text-xs"
+                                />
+                              </div>
                               <p className="text-xs text-gray-400">Resultados Bo3:</p>
                               {[1, 2, 3].map((g) => (
                                 <div key={g} className="flex items-center gap-2 text-xs">
@@ -406,7 +423,10 @@ export default function BracketManager() {
                           ) : (
                             <div className="flex gap-2">
                               <button
-                                onClick={() => setEditingMatch(match.id)}
+                                onClick={() => {
+                                  setEditingMatch(match.id);
+                                  setScheduledTime(match.scheduledTime || '');
+                                }}
                                 className="flex items-center gap-1 px-2 py-1 bg-blue-600/20 border border-blue-500/50 text-blue-400 text-xs hover:bg-blue-600/40 transition-colors"
                               >
                                 <Swords className="w-3 h-3" />

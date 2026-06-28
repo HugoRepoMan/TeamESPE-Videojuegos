@@ -1,73 +1,10 @@
-import { Swords, Clock, Trophy } from 'lucide-react';
+import { Swords, Clock, Trophy, Calendar } from 'lucide-react';
 import { useAuth } from '../auth/useAuth';
+import { useState, useEffect } from 'react';
+import { getMatchesByUser } from '../../firebase/services';
 import HudCard from '../../components/ui/HudCard';
 import StatusBadge from '../../components/ui/StatusBadge';
 import SectionTitle from '../../components/ui/SectionTitle';
-
-const SEED_MATCHES = [
-  {
-    id: 'm1',
-    discipline: 'Clash Royale',
-    round: 'Cuartos de Final',
-    playerAId: 'current-user',
-    playerAName: 'Tu',
-    playerBId: 'opp1',
-    playerBName: 'DragonSlayer',
-    playerAScore: 2,
-    playerBScore: 1,
-    status: 'completed',
-    games: [
-      { game: 1, scoreA: 1, scoreB: 0 },
-      { game: 2, scoreA: 0, scoreB: 1 },
-      { game: 3, scoreA: 1, scoreB: 0 },
-    ],
-  },
-  {
-    id: 'm2',
-    discipline: 'League of Legends',
-    round: 'Semifinal',
-    playerAId: 'current-user',
-    playerAName: 'Tu',
-    playerBId: 'opp2',
-    playerBName: 'ShadowMage',
-    playerAScore: 0,
-    playerBScore: 0,
-    status: 'scheduled',
-    games: [],
-  },
-  {
-    id: 'm3',
-    discipline: 'FIFA 26',
-    round: 'Ronda 1',
-    playerAId: 'opp3',
-    playerAName: 'GoalKing',
-    playerBId: 'current-user',
-    playerBName: 'Tu',
-    playerAScore: 1,
-    playerBScore: 2,
-    status: 'completed',
-    games: [
-      { game: 1, scoreA: 1, scoreB: 0 },
-      { game: 2, scoreA: 0, scoreB: 1 },
-      { game: 3, scoreA: 0, scoreB: 1 },
-    ],
-  },
-  {
-    id: 'm4',
-    discipline: 'Mortal Kombat',
-    round: 'Cuartos de Final',
-    playerAId: 'current-user',
-    playerAName: 'Tu',
-    playerBId: 'opp4',
-    playerBName: 'FatalBlow',
-    playerAScore: 0,
-    playerBScore: 0,
-    status: 'live',
-    games: [
-      { game: 1, scoreA: 1, scoreB: 0 },
-    ],
-  },
-];
 
 function getStatusIcon(status) {
   switch (status) {
@@ -80,41 +17,64 @@ function getStatusIcon(status) {
   }
 }
 
-function isCurrentUser(playerId) {
-  return playerId === 'current-user';
-}
-
 export default function MatchesPanel() {
   const { user } = useAuth();
-  void user;
+  const [matches, setMatches] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    async function loadMatches() {
+      if (!user) return;
+      try {
+        const userMatches = await getMatchesByUser(user.uid);
+        // Sort by round (optional)
+        userMatches.sort((a, b) => (a.round || 0) - (b.round || 0));
+        setMatches(userMatches);
+      } catch (err) {
+        console.error("Error fetching matches:", err);
+      } finally {
+        setLoading(false);
+      }
+    }
+    loadMatches();
+  }, [user]);
+
+  function isCurrentUser(playerId) {
+    return playerId === user?.uid;
+  }
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 p-4 md:p-8">
       <SectionTitle>Mis Partidas</SectionTitle>
 
-      {SEED_MATCHES.length === 0 ? (
+      {loading ? (
+        <div className="text-center py-8 text-gray-400">Cargando partidas...</div>
+      ) : matches.length === 0 ? (
         <HudCard>
           <p className="text-gray-500 text-center py-8">
-            No tienes partidas asignadas todavia.
+            No tienes partidas asignadas todavía.
           </p>
         </HudCard>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          {SEED_MATCHES.map((match) => (
+          {matches.map((match) => (
             <HudCard key={match.id}>
               {/* Match Header */}
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   {getStatusIcon(match.status)}
-                  <span className="text-sm text-gray-400">{match.discipline}</span>
+                  <span className="text-sm text-gray-400">Ronda {match.round}</span>
                 </div>
                 <StatusBadge status={match.status} />
               </div>
 
-              {/* Round */}
-              <p className="text-xs text-gray-500 uppercase tracking-wider mb-3">
-                {match.round}
-              </p>
+              {/* Scheduled Time */}
+              {match.scheduledTime && (
+                <div className="mb-4 flex items-center gap-2 text-sm text-yellow-400 font-semibold bg-yellow-400/10 px-3 py-1 rounded w-fit">
+                  <Calendar className="w-4 h-4" />
+                  {new Date(match.scheduledTime).toLocaleString()}
+                </div>
+              )}
 
               {/* Players and Scores */}
               <div className="flex items-center justify-between bg-gray-800/50 border border-gray-700 p-3">
@@ -124,16 +84,16 @@ export default function MatchesPanel() {
                       isCurrentUser(match.playerAId) ? 'text-red-400' : 'text-gray-200'
                     }`}
                   >
-                    {match.playerAName}
+                    {match.playerAName || 'Por definir'}
                   </p>
                 </div>
                 <div className="flex items-center gap-3 px-4">
                   <span className="text-2xl font-bold text-gray-100">
-                    {match.playerAScore}
+                    {match.playerAScore || 0}
                   </span>
                   <Swords className="w-5 h-5 text-gray-600" />
                   <span className="text-2xl font-bold text-gray-100">
-                    {match.playerBScore}
+                    {match.playerBScore || 0}
                   </span>
                 </div>
                 <div className="flex-1 text-right">
@@ -142,26 +102,26 @@ export default function MatchesPanel() {
                       isCurrentUser(match.playerBId) ? 'text-red-400' : 'text-gray-200'
                     }`}
                   >
-                    {match.playerBName}
+                    {match.playerBName || 'Por definir'}
                   </p>
                 </div>
               </div>
 
               {/* Bo3 Game Breakdown */}
-              {match.games.length > 0 && (
+              {match.bo3Games && match.bo3Games.length > 0 && (
                 <div className="mt-3">
                   <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">
                     Desglose Bo3
                   </p>
                   <div className="space-y-1">
-                    {match.games.map((game) => (
+                    {match.bo3Games.map((game, idx) => (
                       <div
-                        key={game.game}
+                        key={idx}
                         className="flex items-center justify-between text-xs bg-gray-800/30 px-3 py-1"
                       >
-                        <span className="text-gray-500">Juego {game.game}</span>
+                        <span className="text-gray-500">Juego {idx + 1}</span>
                         <span className="text-gray-300">
-                          {game.scoreA} - {game.scoreB}
+                          {game.playerAScore} - {game.playerBScore}
                         </span>
                       </div>
                     ))}

@@ -31,6 +31,7 @@ export const matchResultSchema = z.object({
     playerBScore: z.number().int().min(0),
   })).max(3).optional(),
   status: z.enum(['scheduled', 'live', 'finished', 'walkover']),
+  scheduledTime: z.string().optional(),
   winnerId: z.string().optional(),
 });
 
