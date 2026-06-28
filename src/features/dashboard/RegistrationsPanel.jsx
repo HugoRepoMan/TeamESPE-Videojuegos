@@ -75,11 +75,13 @@ export default function RegistrationsPanel() {
         fieldErrors[field] = issue.message;
       }
       setFormErrors(fieldErrors);
+      setSubmitMessage('Por favor, corrige los errores en rojo antes de continuar.');
       return;
     }
     
     if (!receiptFile) {
       setFormErrors({ ...formErrors, receiptFile: "Por favor, adjunte su comprobante de pago." });
+      setSubmitMessage('Por favor, adjunte su comprobante de pago.');
       return;
     }
 
