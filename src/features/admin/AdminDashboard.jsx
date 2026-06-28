@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { collection, getCountFromServer, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase/client';
+import { Users, DollarSign, Trophy, Layout, CreditCard } from 'lucide-react';
 import HudCard from '../../components/ui/HudCard';
 import StatCard from '../../components/ui/StatCard';
 import DiagonalButton from '../../components/ui/DiagonalButton';
