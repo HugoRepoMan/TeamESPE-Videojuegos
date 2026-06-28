@@ -51,50 +51,51 @@ export default function RegistrationsPanel() {
 
   async function handleRegister(e) {
     e.preventDefault();
-    setFormErrors({});
-    setSubmitMessage('');
-
-    const discipline = DISCIPLINES.find((d) => d.id === selectedDiscipline);
-
-    const formData = {
-      userId: user?.uid || '',
-      disciplineId: selectedDiscipline,
-      playerNick: playerNick.trim(),
-      teamName: teamName.trim(),
-      amount: COST_PER_DISCIPLINE,
-      paymentStatus: 'pending',
-      paymentReference: '',
-      disciplineName: discipline?.name || selectedDiscipline,
-    };
-
-    const result = registrationSchema.safeParse(formData);
-    if (!result.success) {
-      const fieldErrors = {};
-      for (const issue of result.error.issues) {
-        const field = issue.path[0];
-        fieldErrors[field] = issue.message;
-      }
-      setFormErrors(fieldErrors);
-      setSubmitMessage('Por favor, corrige los errores en rojo antes de continuar.');
-      return;
-    }
-    
-    if (!receiptFile) {
-      setFormErrors({ ...formErrors, receiptFile: "Por favor, adjunte su comprobante de pago." });
-      setSubmitMessage('Por favor, adjunte su comprobante de pago.');
-      return;
-    }
-
-    const alreadyRegistered = registrations.some(
-      (r) => r.disciplineId === selectedDiscipline
-    );
-    if (alreadyRegistered) {
-      setSubmitMessage('Ya estas inscrito en esta disciplina.');
-      return;
-    }
-
-    setSubmitting(true);
     try {
+      setFormErrors({});
+      setSubmitMessage('');
+
+      const discipline = DISCIPLINES.find((d) => d.id === selectedDiscipline);
+
+      const formData = {
+        userId: user?.uid || '',
+        disciplineId: selectedDiscipline,
+        playerNick: playerNick.trim(),
+        teamName: teamName.trim(),
+        amount: COST_PER_DISCIPLINE,
+        paymentStatus: 'pending',
+        paymentReference: '',
+        disciplineName: discipline?.name || selectedDiscipline,
+      };
+
+      const result = registrationSchema.safeParse(formData);
+      if (!result.success) {
+        const fieldErrors = {};
+        for (const issue of result.error.issues) {
+          const field = issue.path[0];
+          fieldErrors[field] = issue.message;
+        }
+        setFormErrors(fieldErrors);
+        setSubmitMessage('Por favor, corrige los errores en rojo antes de continuar.');
+        return;
+      }
+      
+      if (!receiptFile) {
+        setFormErrors({ ...formErrors, receiptFile: "Por favor, adjunte su comprobante de pago." });
+        setSubmitMessage('Por favor, adjunte su comprobante de pago.');
+        return;
+      }
+
+      const alreadyRegistered = registrations.some(
+        (r) => r.disciplineId === selectedDiscipline
+      );
+      if (alreadyRegistered) {
+        setSubmitMessage('Ya estas inscrito en esta disciplina.');
+        return;
+      }
+
+      setSubmitting(true);
+      
       // 1. Upload receipt to storage
       const receiptUrl = await uploadPaymentReceipt(receiptFile, user.uid);
       
@@ -117,7 +118,7 @@ export default function RegistrationsPanel() {
       setSubmitMessage('Inscripcion registrada exitosamente.');
     } catch (error) {
       console.error(error);
-      setSubmitMessage('Error al registrar la inscripcion. Intente de nuevo.');
+      setSubmitMessage('Error critico: ' + (error.message || 'Error desconocido'));
     } finally {
       setSubmitting(false);
     }
@@ -132,19 +133,6 @@ export default function RegistrationsPanel() {
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 p-4 md:p-8">
       <SectionTitle>Mis Inscripciones</SectionTitle>
-
-      {/* Submit Message */}
-      {submitMessage && (
-        <div
-          className={`mb-4 p-3 border text-sm ${
-            submitMessage.includes('Error') || submitMessage.includes('Ya estas')
-              ? 'border-red-500/50 bg-red-500/10 text-red-400'
-              : 'border-green-500/50 bg-green-500/10 text-green-400'
-          }`}
-        >
-          {submitMessage}
-        </div>
-      )}
 
       {/* Current Registrations */}
       <HudCard className="mb-8">
@@ -188,6 +176,20 @@ export default function RegistrationsPanel() {
           <CreditCard className="w-5 h-5 text-red-500" />
           Nueva Inscripcion
         </h3>
+        
+        {/* Submit Message */}
+        {submitMessage && (
+          <div
+            className={`mb-4 p-3 border text-sm ${
+              submitMessage.includes('Error') || submitMessage.includes('Ya estas') || submitMessage.includes('Por favor')
+                ? 'border-red-500/50 bg-red-500/10 text-red-400'
+                : 'border-green-500/50 bg-green-500/10 text-green-400'
+            }`}
+          >
+            {submitMessage}
+          </div>
+        )}
+
         <form onSubmit={handleRegister} className="space-y-4 max-w-md">
           <div>
             <label className="block text-sm text-gray-400 mb-1">Disciplina</label>
