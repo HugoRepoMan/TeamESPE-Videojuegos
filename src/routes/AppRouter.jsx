@@ -15,8 +15,6 @@ import AdminDashboard from '../features/admin/AdminDashboard';
 import PaymentsManager from '../features/admin/PaymentsManager';
 import BracketManager from '../features/tournament/BracketManager';
 import TreasuryPanel from '../features/treasury/TreasuryPanel';
-import OverlayControlPanel from '../features/admin/OverlayControlPanel';
-import BroadcastOverlay from '../features/overlay/BroadcastOverlay';
 import BracketsPage from '../pages/BracketsPage';
 
 const router = createBrowserRouter([
@@ -64,14 +62,6 @@ const router = createBrowserRouter([
     path: '/admin/treasury',
     element: <AdminRoute><PageShell title="Tesorería" showBack><TreasuryPanel /></PageShell></AdminRoute>
   },
-  {
-    path: '/admin/overlay-control',
-    element: <AdminRoute><PageShell title="Control de Overlay" showBack><OverlayControlPanel /></PageShell></AdminRoute>
-  },
-  {
-    path: '/overlay/live',
-    element: <BroadcastOverlay /> // No PageShell, raw overlay
-  }
 ]);
 
 export default function AppRouter() {

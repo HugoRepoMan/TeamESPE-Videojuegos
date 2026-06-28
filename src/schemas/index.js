@@ -34,15 +34,6 @@ export const matchResultSchema = z.object({
   winnerId: z.string().optional(),
 });
 
-export const overlayUpdateSchema = z.object({
-  activeMatchId: z.string().min(1),
-  disciplineName: safeString(50),
-  playerAName: safeString(50),
-  playerBName: safeString(50),
-  playerAScore: z.number().int().min(0),
-  playerBScore: z.number().int().min(0),
-  status: z.enum(['scheduled', 'live', 'finished', 'walkover']),
-});
 
 export const treasuryFilterSchema = z.object({
   disciplineId: z.string().optional(),

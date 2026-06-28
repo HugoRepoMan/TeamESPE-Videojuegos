@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { collection, getCountFromServer, query, where, getDocs } from 'firebase/firestore';
 import { db } from '../../firebase/client';
-import { Users, DollarSign, Trophy, Layout, CreditCard, Tv } from 'lucide-react';
 import HudCard from '../../components/ui/HudCard';
 import StatCard from '../../components/ui/StatCard';
 import DiagonalButton from '../../components/ui/DiagonalButton';
@@ -27,10 +26,6 @@ const NAV_CARDS = [
     href: '/admin/treasury',
   },
   {
-    icon: Tv,
-    title: 'Control de Overlay',
-    description: 'Controlar el overlay en vivo para transmisiones en OBS Studio.',
-    href: '/admin/overlay-control',
   },
 ];
 

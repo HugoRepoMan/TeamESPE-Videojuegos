@@ -13,14 +13,13 @@ import {
 } from 'firebase/firestore';
 import { ref as rtdbRef, set, onValue } from 'firebase/database';
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
-import { db, rtdb, storage } from './client';
+import { db,storage } from './client';
 import { sanitizeString, sanitizeDocId } from '../lib/sanitize';
 import {
   userProfileSchema,
   registrationSchema,
   paymentApprovalSchema,
   matchResultSchema,
-  overlayUpdateSchema,
   treasuryFilterSchema,
 } from '../schemas';
 
@@ -305,31 +304,6 @@ export async function createTreasuryEntry(data) {
 }
 
 // ---------------------------------------------------------------------------
-// Live Overlay (Realtime Database)
-// ---------------------------------------------------------------------------
-
-/**
- * Write overlay data to the Realtime Database.
- * @param {object} data - Overlay payload.
- * @returns {Promise<void>}
- */
-export async function updateOverlay(data) {
-  const parsed = overlayUpdateSchema.parse(data);
-  await set(rtdbRef(rtdb, 'liveOverlay'), parsed);
-}
-
-/**
- * Subscribe to live overlay changes.
- * @param {function} callback - Called with the overlay data on every change.
- * @returns {function} Unsubscribe function.
- */
-export function subscribeToOverlay(callback) {
-  const overlayNodeRef = rtdbRef(rtdb, 'liveOverlay');
-  const unsubscribe = onValue(overlayNodeRef, (snapshot) => {
-    callback(snapshot.val());
-  });
-  return unsubscribe;
-}
 
 // ---------------------------------------------------------------------------
 // Public Settings
