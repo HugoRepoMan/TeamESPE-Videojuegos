@@ -9,7 +9,7 @@ import SectionTitle from '../../components/ui/SectionTitle';
 import GameBadge from '../../components/ui/GameBadge';
 import { useCollection } from '../../hooks/useFirestore';
 import { where } from 'firebase/firestore';
-import { getApprovedRegistrations, createMatch, updateMatchResult } from '../../firebase/services';
+import { getApprovedRegistrations, createMatch, updateMatchResult, deleteMatchesByDiscipline } from '../../firebase/services';
 
 const DISCIPLINES = [
   { id: 'clash-royale', name: 'Clash Royale', slug: 'clash-royale' },
@@ -97,6 +97,25 @@ export default function BracketManager() {
     } catch (err) {
       console.error(err);
       setMessage('Error al generar el bracket.');
+    } finally {
+      setIsGenerating(false);
+    }
+  }
+
+  async function handleDeleteMatches() {
+    if (!selectedDiscipline) return;
+    if (!window.confirm('¿Estas seguro de que deseas eliminar TODOS los brackets generados para esta disciplina? Esta accion no se puede deshacer.')) {
+      return;
+    }
+
+    try {
+      setIsGenerating(true);
+      setMessage('Eliminando brackets...');
+      await deleteMatchesByDiscipline(selectedDiscipline);
+      setMessage('Brackets eliminados exitosamente. Ahora puedes volver a generar el sorteo.');
+    } catch (err) {
+      console.error(err);
+      setMessage('Error al eliminar los brackets.');
     } finally {
       setIsGenerating(false);
     }
@@ -255,10 +274,17 @@ export default function BracketManager() {
               ))}
             </select>
           </div>
-          <DiagonalButton onClick={handleGenerate} disabled={isGenerating}>
-            {isGenerating ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trophy className="w-4 h-4 mr-2" />}
-            Generar Bracket
-          </DiagonalButton>
+          <div className="flex gap-4">
+            <DiagonalButton onClick={handleGenerate} disabled={isGenerating || matches.length > 0}>
+              {isGenerating ? 'Procesando...' : 'Generar Brackets'}
+            </DiagonalButton>
+            
+            {matches.length > 0 && (
+              <DiagonalButton onClick={handleDeleteMatches} disabled={isGenerating} variant="danger">
+                Eliminar Sorteo
+              </DiagonalButton>
+            )}
+          </div>
         </div>
       </HudCard>
 

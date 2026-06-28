@@ -2,7 +2,7 @@ import {
   doc,
   getDoc,
   setDoc,
-  updateDoc,
+  updateDoc, deleteDoc,
   addDoc,
   collection,
   query,
@@ -342,4 +342,17 @@ export function subscribeToOverlay(callback) {
 export async function getPublicSettings() {
   const snap = await getDoc(doc(db, 'settings', 'public'));
   return snap.exists() ? snap.data() : null;
+}
+
+/**
+ * Delete all matches for a specific discipline.
+ * @param {string} disciplineId - The discipline document ID.
+ * @returns {Promise<void>}
+ */
+export async function deleteMatchesByDiscipline(disciplineId) {
+  const safeId = sanitizeDocId(disciplineId);
+  const q = query(collection(db, 'matches'), where('disciplineId', '==', safeId));
+  const snap = await getDocs(q);
+  const deletePromises = snap.docs.map(doc => deleteDoc(doc.ref));
+  await Promise.all(deletePromises);
 }
