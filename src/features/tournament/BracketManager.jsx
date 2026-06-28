@@ -363,7 +363,7 @@ export default function BracketManager() {
                       </div>
 
                       {/* Actions */}
-                      {match.status !== 'completed' && match.playerAId && match.playerBId && (
+                      {match.status !== 'completed' && (
                         <div className="space-y-2">
                           {editingMatch === match.id ? (
                             <div className="space-y-2">
@@ -376,34 +376,42 @@ export default function BracketManager() {
                                   className="w-full bg-gray-800 border border-gray-700 text-gray-100 px-2 py-1 focus:outline-none focus:border-red-500 text-xs"
                                 />
                               </div>
-                              <p className="text-xs text-gray-400">Resultados Bo3:</p>
-                              {[1, 2, 3].map((g) => (
-                                <div key={g} className="flex items-center gap-2 text-xs">
-                                  <span className="text-gray-500 w-14">Juego {g}:</span>
-                                  <input
-                                    type="number"
-                                    name={`game${g}A`}
-                                    value={gameScores[`game${g}A`]}
-                                    onChange={handleScoreChange}
-                                    min={0}
-                                    className="w-12 bg-gray-800 border border-gray-700 text-gray-100 px-1 py-0.5 text-center focus:outline-none focus:border-red-500"
-                                  />
-                                  <span className="text-gray-600">-</span>
-                                  <input
-                                    type="number"
-                                    name={`game${g}B`}
-                                    value={gameScores[`game${g}B`]}
-                                    onChange={handleScoreChange}
-                                    min={0}
-                                    className="w-12 bg-gray-800 border border-gray-700 text-gray-100 px-1 py-0.5 text-center focus:outline-none focus:border-red-500"
-                                  />
-                                </div>
-                              ))}
-                              {formErrors && Object.keys(formErrors).length > 0 && (
-                                <p className="text-red-400 text-xs">
-                                  Verifique los puntajes ingresados.
-                                </p>
+                              
+                              {match.playerAId && match.playerBId ? (
+                                <>
+                                  <p className="text-xs text-gray-400">Resultados Bo3:</p>
+                                  {[1, 2, 3].map((g) => (
+                                    <div key={g} className="flex items-center gap-2 text-xs">
+                                      <span className="text-gray-500 w-14">Juego {g}:</span>
+                                      <input
+                                        type="number"
+                                        name={`game${g}A`}
+                                        value={gameScores[`game${g}A`]}
+                                        onChange={handleScoreChange}
+                                        min={0}
+                                        className="w-12 bg-gray-800 border border-gray-700 text-gray-100 px-1 py-0.5 text-center focus:outline-none focus:border-red-500"
+                                      />
+                                      <span className="text-gray-600">-</span>
+                                      <input
+                                        type="number"
+                                        name={`game${g}B`}
+                                        value={gameScores[`game${g}B`]}
+                                        onChange={handleScoreChange}
+                                        min={0}
+                                        className="w-12 bg-gray-800 border border-gray-700 text-gray-100 px-1 py-0.5 text-center focus:outline-none focus:border-red-500"
+                                      />
+                                    </div>
+                                  ))}
+                                  {formErrors && Object.keys(formErrors).length > 0 && (
+                                    <p className="text-red-400 text-xs">
+                                      Verifique los puntajes ingresados.
+                                    </p>
+                                  )}
+                                </>
+                              ) : (
+                                <p className="text-xs text-gray-500 italic">Los jugadores aún no están definidos, solo puedes programar la fecha.</p>
                               )}
+
                               <div className="flex gap-2">
                                 <button
                                   onClick={() => handleSubmitResult(match.id)}
@@ -430,24 +438,29 @@ export default function BracketManager() {
                                 className="flex items-center gap-1 px-2 py-1 bg-blue-600/20 border border-blue-500/50 text-blue-400 text-xs hover:bg-blue-600/40 transition-colors"
                               >
                                 <Swords className="w-3 h-3" />
-                                Registrar Resultado
+                                {match.playerAId && match.playerBId ? 'Registrar / Programar' : 'Programar Horario'}
                               </button>
-                              <button
-                                onClick={() => handleWalkover(match.id, match.playerAId)}
-                                className="flex items-center gap-1 px-2 py-1 bg-yellow-600/20 border border-yellow-500/50 text-yellow-400 text-xs hover:bg-yellow-600/40 transition-colors"
-                                title={`W.O. a favor de ${match.playerAName}`}
-                              >
-                                <AlertTriangle className="w-3 h-3" />
-                                W.O. A
-                              </button>
-                              <button
-                                onClick={() => handleWalkover(match.id, match.playerBId)}
-                                className="flex items-center gap-1 px-2 py-1 bg-yellow-600/20 border border-yellow-500/50 text-yellow-400 text-xs hover:bg-yellow-600/40 transition-colors"
-                                title={`W.O. a favor de ${match.playerBName}`}
-                              >
-                                <AlertTriangle className="w-3 h-3" />
-                                W.O. B
-                              </button>
+                              
+                              {match.playerAId && match.playerBId && (
+                                <>
+                                  <button
+                                    onClick={() => handleWalkover(match.id, match.playerAId)}
+                                    className="flex items-center gap-1 px-2 py-1 bg-yellow-600/20 border border-yellow-500/50 text-yellow-400 text-xs hover:bg-yellow-600/40 transition-colors"
+                                    title={`W.O. a favor de ${match.playerAName}`}
+                                  >
+                                    <AlertTriangle className="w-3 h-3" />
+                                    W.O. A
+                                  </button>
+                                  <button
+                                    onClick={() => handleWalkover(match.id, match.playerBId)}
+                                    className="flex items-center gap-1 px-2 py-1 bg-yellow-600/20 border border-yellow-500/50 text-yellow-400 text-xs hover:bg-yellow-600/40 transition-colors"
+                                    title={`W.O. a favor de ${match.playerBName}`}
+                                  >
+                                    <AlertTriangle className="w-3 h-3" />
+                                    W.O. B
+                                  </button>
+                                </>
+                              )}
                             </div>
                           )}
                         </div>
