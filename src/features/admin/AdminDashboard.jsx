@@ -25,9 +25,7 @@ const NAV_CARDS = [
     title: 'Tesoreria',
     description: 'Resumen financiero, ingresos por disciplina y exportar reportes.',
     href: '/admin/treasury',
-  },
-  {
-  },
+  }
 ];
 
 export default function AdminDashboard() {
