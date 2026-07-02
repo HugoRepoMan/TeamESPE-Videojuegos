@@ -260,12 +260,21 @@ export default function LandingPage() {
 
           {/* CTA */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <Link to="/register">
-              <DiagonalButton className="text-base px-10 py-4 flex items-center gap-2">
-                Inscríbete Ahora
-                <ChevronRight size={18} />
-              </DiagonalButton>
-            </Link>
+            {user ? (
+              <Link to={isAdmin ? "/admin" : "/dashboard"}>
+                <DiagonalButton className="text-base px-10 py-4 flex items-center gap-2">
+                  Ir al Panel
+                  <ChevronRight size={18} />
+                </DiagonalButton>
+              </Link>
+            ) : (
+              <Link to="/register">
+                <DiagonalButton className="text-base px-10 py-4 flex items-center gap-2">
+                  Inscríbete Ahora
+                  <ChevronRight size={18} />
+                </DiagonalButton>
+              </Link>
+            )}
             <Link to="/brackets">
               <DiagonalButton variant="secondary" className="text-base px-10 py-4 flex items-center gap-2 border-hud-gold text-hud-gold hover:bg-hud-gold/10">
                 Ver Llaves en Vivo
