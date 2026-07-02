@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { doc, updateDoc, collection, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
+import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { Check, X, Filter, Search, FileText, Trash2 } from 'lucide-react';
+import { updatePaymentStatus, createTreasuryEntry, deleteRegistration } from '../../firebase/services';
+import { useAuth } from '../auth/useAuth';
 import { db } from '../../firebase/client';
-import { deleteRegistration } from '../../firebase/services';
 import HudCard from '../../components/ui/HudCard';
 import StatusBadge from '../../components/ui/StatusBadge';
 import DiagonalButton from '../../components/ui/DiagonalButton';
@@ -19,6 +20,7 @@ const DISCIPLINES = [
 ];
 
 export default function PaymentsManager() {
+  const { user } = useAuth();
   const [registrations, setRegistrations] = useState([]);
   const [filterDiscipline, setFilterDiscipline] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
@@ -56,48 +58,35 @@ export default function PaymentsManager() {
   async function handleAction(registrationId, action) {
     setMessage('');
     const reg = registrations.find((r) => r.id === registrationId);
-    if (!reg) return;
+    if (!reg || !user) return;
 
     const newStatus = action === 'approve' ? 'approved' : 'rejected';
 
-    const approvalData = {
-      registrationId,
-      paymentStatus: newStatus,
-    };
-
-    // Remove strict validation as it was blocking valid admin actions
-
     setProcessing(registrationId);
     try {
-      const docRef = doc(db, 'registrations', registrationId);
-      await updateDoc(docRef, {
-        paymentStatus: newStatus,
-        updatedAt: new Date().toISOString(),
-      });
+      // Use the service function that includes Zod validation and sanitization
+      await updatePaymentStatus(registrationId, newStatus, user.uid);
 
+      // If approved, create a treasury entry through the service layer
       if (newStatus === 'approved') {
-        await addDoc(collection(db, 'treasury'), {
+        await createTreasuryEntry({
           registrationId,
           userId: reg.userId,
           playerNick: reg.playerNick,
           disciplineId: reg.disciplineId,
           amount: reg.amount,
           type: 'income',
-          createdAt: new Date().toISOString(),
+          description: `Inscripción aprobada: ${reg.playerNick} - ${reg.disciplineId}`,
         });
       }
 
-      setRegistrations((prev) =>
-        prev.map((r) =>
-          r.id === registrationId ? { ...r, paymentStatus: newStatus } : r
-        )
-      );
       setMessage(
         newStatus === 'approved'
           ? `Pago de ${reg.playerNick} aprobado correctamente.`
           : `Pago de ${reg.playerNick} rechazado.`
       );
-    } catch {
+    } catch (err) {
+      console.error('Error updating payment status:', err);
       setMessage('Error al actualizar el estado del pago.');
     } finally {
       setProcessing(null);

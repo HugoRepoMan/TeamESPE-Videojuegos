@@ -21,12 +21,22 @@ const app = initializeApp(firebaseConfig);
 // For local development without reCAPTCHA, you would normally use CustomProvider or debug tokens.
 let appCheck;
 if (typeof window !== 'undefined') {
-  // Use a placeholder key if it's not configured yet so the app doesn't crash completely.
-  const reCaptchaKey = import.meta.env.VITE_RECAPTCHA_V3_SITE_KEY || '6Ldummy-SiteKey-Please-Configure-reCAPTCHA';
-  appCheck = initializeAppCheck(app, {
-    provider: new ReCaptchaV3Provider(reCaptchaKey),
-    isTokenAutoRefreshEnabled: true
-  });
+  const reCaptchaKey = import.meta.env.VITE_RECAPTCHA_V3_SITE_KEY;
+
+  if (!reCaptchaKey) {
+    // In development without a reCAPTCHA key, App Check is not enforced.
+    // Set VITE_RECAPTCHA_V3_SITE_KEY in your .env for local testing with App Check.
+    // IMPORTANT: Never deploy to production without this variable configured.
+    console.warn(
+      '⚠️ VITE_RECAPTCHA_V3_SITE_KEY no está configurada. ' +
+      'App Check está deshabilitado. Configura la clave para producción.'
+    );
+  } else {
+    appCheck = initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(reCaptchaKey),
+      isTokenAutoRefreshEnabled: true,
+    });
+  }
 }
 
 export const auth = getAuth(app);

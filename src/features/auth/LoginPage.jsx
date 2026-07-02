@@ -60,10 +60,7 @@ export default function LoginPage() {
     } catch (err) {
       console.error('Login error:', err);
       const errorCode = err.code || '';
-      const fallbackMessage = err.message 
-        ? `Error interno (${errorCode}): ${err.message}` 
-        : 'Error al iniciar sesion. Verifica tus credenciales.';
-      setFirebaseError(FIREBASE_ERRORS[errorCode] || fallbackMessage);
+      setFirebaseError(FIREBASE_ERRORS[errorCode] || 'Error al iniciar sesión. Intenta de nuevo más tarde.');
     } finally {
       setSubmitting(false);
     }

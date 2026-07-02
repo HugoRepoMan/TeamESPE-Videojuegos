@@ -4,25 +4,32 @@ import { sanitizeString } from '../lib/sanitize';
 const safeString = (maxLen = 100) =>
   z.string().max(maxLen).transform(sanitizeString);
 
+// userProfileSchema: only allow known profile fields.
+// .strict() ensures extra unknown fields (e.g. roleVisible, uid) are rejected.
 export const userProfileSchema = z.object({
   displayName: safeString(50),
   nick: safeString(30),
   teamName: safeString(50).optional(),
-});
+}).strict();
 
+// registrationSchema: validates fields the user provides when registering.
+// userId, amount, paymentStatus are enforced by the service / Firestore rules.
 export const registrationSchema = z.object({
   disciplineId: z.string().min(1),
   playerNick: safeString(30),
   teamName: safeString(50).optional(),
   paymentReceiptUrl: z.string().url().optional(),
-});
+}).strict();
 
 export const paymentApprovalSchema = z.object({
   registrationId: z.string().min(1),
   paymentStatus: z.enum(['approved', 'rejected']),
   paymentReference: safeString(100).optional(),
-});
+}).strict();
 
+// matchResultSchema: uses .strip() (default) because advanceWinnerInDb passes
+// extra fields (playerAId, playerBName, etc.) that need to reach Firestore.
+// Those extra fields are safe as they are set by the admin, not by users.
 export const matchResultSchema = z.object({
   playerAScore: z.number().int().min(0).max(3),
   playerBScore: z.number().int().min(0).max(3),
@@ -35,10 +42,9 @@ export const matchResultSchema = z.object({
   winnerId: z.string().nullable().optional(),
 });
 
-
 export const treasuryFilterSchema = z.object({
   disciplineId: z.string().optional(),
   type: z.string().optional(),
   dateFrom: z.string().optional(),
   dateTo: z.string().optional(),
-});
+}).strict();

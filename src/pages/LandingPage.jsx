@@ -246,7 +246,7 @@ export default function LandingPage() {
 
           {/* Subtitle */}
           <p className="text-lg sm:text-xl text-hud-text-secondary max-w-2xl mx-auto mb-8 leading-relaxed">
-            Un solo día. 7 disciplinas. Un solo campeón.
+            Un solo día. 7 disciplinas. Un campeón por videojuego.
             El torneo interuniversitario más grande de Santo Domingo.
           </p>
 
@@ -364,13 +364,19 @@ export default function LandingPage() {
             {/* Summary card */}
             <HudCard variant="accent" clip="diagonal" className="flex flex-col items-center justify-center text-center">
               <Zap size={32} className="text-hud-accent mb-3" />
-              <p className="text-lg font-bold uppercase tracking-wider mb-2">Todas las Disciplinas</p>
+              <p className="text-lg font-bold uppercase tracking-wider mb-2">Juega en Varios</p>
               <p className="text-sm text-hud-text-secondary mb-4">
-                Inscríbete en múltiples juegos y multiplica tus posibilidades de ganar.
+                Inscríbete en tus juegos favoritos de manera individual y demuestra tu nivel en cada uno.
               </p>
-              <Link to="/register">
-                <DiagonalButton>Registrarse</DiagonalButton>
-              </Link>
+              {user ? (
+                <Link to={isAdmin ? "/admin" : "/dashboard"}>
+                  <DiagonalButton>Ir al Panel</DiagonalButton>
+                </Link>
+              ) : (
+                <Link to="/register">
+                  <DiagonalButton>Registrarse</DiagonalButton>
+                </Link>
+              )}
             </HudCard>
           </div>
         </div>

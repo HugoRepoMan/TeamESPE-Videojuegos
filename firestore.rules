@@ -36,13 +36,34 @@ service cloud.firestore {
       // Users can read their own registrations
       allow read: if request.auth != null &&
         (resource.data.userId == request.auth.uid || request.auth.token.admin == true);
-      // Users can create registrations (but not set paymentStatus to approved)
+
+      // Users can create registrations under their own ID with enforced constraints.
+      // The document ID must follow the pattern {userId}_{disciplineId} to guarantee uniqueness per user per discipline.
       allow create: if request.auth != null
         && request.resource.data.userId == request.auth.uid
+        && registrationId.matches(request.auth.uid + '_.*')
         && request.resource.data.paymentStatus == 'pending'
-        && request.resource.data.amount == 2;
-      // Only admin can update (especially paymentStatus)
-      allow update: if request.auth != null && request.auth.token.admin == true;
+        && request.resource.data.amount == 2
+        && request.resource.data.keys().hasAll(['userId', 'disciplineId', 'playerNick', 'paymentStatus', 'amount']);
+
+      // Users cannot overwrite an already-reviewed registration (approved/rejected).
+      // This prevents re-submitting after a payment decision has been made.
+      allow update: if request.auth != null &&
+        (
+          // Admin can always update
+          request.auth.token.admin == true
+          // Users can only update their own pending registrations (e.g. to re-upload receipt)
+          // but cannot change paymentStatus, amount, userId or disciplineId.
+          || (
+            request.auth.uid == resource.data.userId
+            && resource.data.paymentStatus == 'pending'
+            && request.resource.data.paymentStatus == 'pending'
+            && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['userId', 'disciplineId', 'amount', 'createdAt'])
+          )
+        );
+
+      // Only admin can delete registrations
+      allow delete: if request.auth != null && request.auth.token.admin == true;
     }
 
     // Matches - public read for published, admin write

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, addDoc, query, where, onSnapshot } from 'firebase/firestore';
+import { collection, query, where, onSnapshot, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Gamepad2, CreditCard, Info, UploadCloud } from 'lucide-react';
 import { db } from '../../firebase/client';
 import { uploadPaymentReceipt } from '../../firebase/services';
@@ -58,14 +58,9 @@ export default function RegistrationsPanel() {
       const discipline = DISCIPLINES.find((d) => d.id === selectedDiscipline);
 
       const formData = {
-        userId: user?.uid || '',
         disciplineId: selectedDiscipline,
         playerNick: playerNick.trim(),
         teamName: teamName.trim(),
-        amount: COST_PER_DISCIPLINE,
-        paymentStatus: 'pending',
-        paymentReference: '',
-        disciplineName: discipline?.name || selectedDiscipline,
       };
 
       const result = registrationSchema.safeParse(formData);
@@ -79,36 +74,57 @@ export default function RegistrationsPanel() {
         setSubmitMessage('Por favor, corrige los errores en rojo antes de continuar.');
         return;
       }
-      
+
       if (!receiptFile) {
-        setFormErrors({ ...formErrors, receiptFile: "Por favor, adjunte su comprobante de pago." });
+        setFormErrors({ receiptFile: 'Por favor, adjunte su comprobante de pago.' });
         setSubmitMessage('Por favor, adjunte su comprobante de pago.');
         return;
       }
 
+      // Validate file type client-side (defense-in-depth; Storage rules also validate)
+      const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'application/pdf'];
+      if (!allowedTypes.includes(receiptFile.type)) {
+        setFormErrors({ receiptFile: 'Solo se permiten imágenes (JPG, PNG, GIF, WEBP) o PDF.' });
+        setSubmitMessage('Tipo de archivo no permitido.');
+        return;
+      }
+      const MAX_SIZE = 5 * 1024 * 1024; // 5 MB
+      if (receiptFile.size > MAX_SIZE) {
+        setFormErrors({ receiptFile: 'El archivo no puede superar los 5 MB.' });
+        setSubmitMessage('El archivo es demasiado grande.');
+        return;
+      }
+
+      // Use a deterministic document ID to prevent duplicate registrations at the DB level.
+      // Even if the client-side check is bypassed, Firestore will reject a second setDoc
+      // with the same ID (or overwrite, which is also safe since we keep paymentStatus: pending).
+      const registrationDocId = `${user.uid}_${selectedDiscipline}`;
       const alreadyRegistered = registrations.some(
         (r) => r.disciplineId === selectedDiscipline
       );
       if (alreadyRegistered) {
-        setSubmitMessage('Ya estas inscrito en esta disciplina.');
+        setSubmitMessage('Ya estás inscrito en esta disciplina.');
         return;
       }
 
       setSubmitting(true);
-      
+
       // 1. Upload receipt to storage
       const receiptUrl = await uploadPaymentReceipt(receiptFile, user.uid);
-      
-      // 2. Save registration doc
+
+      // 2. Save registration using a deterministic ID to prevent duplicates
       const docData = {
-        ...formData,
         ...result.data,
+        userId: user.uid,
+        amount: COST_PER_DISCIPLINE,
+        paymentStatus: 'pending',
         paymentReceiptUrl: receiptUrl,
-        createdAt: new Date(), // using local date because serverTimestamp() makes it hard to parse immediately locally if needed
+        disciplineName: discipline?.name || selectedDiscipline,
         playerName: user?.displayName || user?.email || 'Jugador',
+        createdAt: serverTimestamp(),
       };
-      
-      await addDoc(collection(db, 'registrations'), docData);
+
+      await setDoc(doc(db, 'registrations', registrationDocId), docData);
 
       setSelectedDiscipline('');
       setPlayerNick('');
@@ -118,7 +134,7 @@ export default function RegistrationsPanel() {
       setSubmitMessage('Inscripcion registrada exitosamente.');
     } catch (error) {
       console.error(error);
-      setSubmitMessage('Error critico: ' + (error.message || 'Error desconocido'));
+      setSubmitMessage('Error al procesar tu inscripción. Inténtalo de nuevo.');
     } finally {
       setSubmitting(false);
     }

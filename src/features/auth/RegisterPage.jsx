@@ -72,10 +72,7 @@ export default function RegisterPage() {
     } catch (err) {
       console.error('Registration error:', err);
       const errorCode = err.code || '';
-      const fallbackMessage = err.message 
-        ? `Error interno (${errorCode}): ${err.message}` 
-        : 'Error al registrar. Intenta de nuevo.';
-      setFirebaseError(FIREBASE_ERRORS[errorCode] || fallbackMessage);
+      setFirebaseError(FIREBASE_ERRORS[errorCode] || 'Error al registrar la cuenta. Intenta de nuevo más tarde.');
     } finally {
       setSubmitting(false);
     }
