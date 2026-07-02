@@ -11,7 +11,7 @@ import {
   serverTimestamp,
   orderBy,
 } from 'firebase/firestore';
-import { ref as rtdbRef, set, onValue } from 'firebase/database';
+
 import { ref as storageRef, uploadBytes, getDownloadURL } from 'firebase/storage';
 import { db,storage } from './client';
 import { sanitizeString, sanitizeDocId } from '../lib/sanitize';

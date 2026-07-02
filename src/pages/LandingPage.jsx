@@ -153,6 +153,14 @@ function RuleAccordion({ title, content, index }) {
 export default function LandingPage() {
   const { user, isAdmin, logout } = useAuth();
 
+  const scrollToSection = (e, id) => {
+    e.preventDefault();
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-hud-bg">
 
@@ -163,10 +171,10 @@ export default function LandingPage() {
             <Gamepad2 size={24} className="text-hud-accent" />
             <span className="text-lg font-bold uppercase tracking-widest">ESPE Gaming</span>
           </div>
-          <div className="hidden sm:flex items-center gap-6 text-sm font-semibold uppercase tracking-wider text-hud-text-secondary">
-            <a href="#disciplines" className="hover:text-hud-accent transition-colors">Disciplinas</a>
-            <a href="#schedule" className="hover:text-hud-accent transition-colors">Cronograma</a>
-            <a href="#rules" className="hover:text-hud-accent transition-colors">Reglas</a>
+          <div className="hidden md:flex items-center gap-8 text-sm font-bold tracking-widest uppercase">
+            <button onClick={(e) => scrollToSection(e, 'disciplines')} className="hover:text-hud-accent transition-colors uppercase cursor-pointer">Disciplinas</button>
+            <button onClick={(e) => scrollToSection(e, 'schedule')} className="hover:text-hud-accent transition-colors uppercase cursor-pointer">Cronograma</button>
+            <button onClick={(e) => scrollToSection(e, 'rules')} className="hover:text-hud-accent transition-colors uppercase cursor-pointer">Reglas</button>
             <Link to="/brackets" className="hover:text-hud-accent transition-colors text-hud-gold">Ver Llaves</Link>
           </div>
           <div className="flex items-center gap-3">
@@ -281,12 +289,12 @@ export default function LandingPage() {
                 <Trophy size={18} />
               </DiagonalButton>
             </Link>
-            <a href="#disciplines">
+            <button onClick={(e) => scrollToSection(e, 'disciplines')} className="cursor-pointer">
               <DiagonalButton variant="secondary" className="text-base px-10 py-4 flex items-center gap-2">
                 Ver Disciplinas
                 <Swords size={18} />
               </DiagonalButton>
-            </a>
+            </button>
           </div>
 
           {/* Stats bar */}
@@ -484,12 +492,21 @@ export default function LandingPage() {
             el mejor jugador de la ESPE.
           </p>
 
-          <Link to="/register">
-            <DiagonalButton className="text-lg px-12 py-5 inline-flex items-center gap-3">
-              Inscríbete Ahora
-              <ChevronRight size={20} />
-            </DiagonalButton>
-          </Link>
+          {user ? (
+            <Link to={isAdmin ? "/admin" : "/dashboard"}>
+              <DiagonalButton className="text-lg px-12 py-5 inline-flex items-center gap-3">
+                Ir al Panel
+                <ChevronRight size={20} />
+              </DiagonalButton>
+            </Link>
+          ) : (
+            <Link to="/register">
+              <DiagonalButton className="text-lg px-12 py-5 inline-flex items-center gap-3">
+                Inscríbete Ahora
+                <ChevronRight size={20} />
+              </DiagonalButton>
+            </Link>
+          )}
 
           {/* Bottom decorative elements */}
           <div className="mt-16 flex items-center justify-center gap-4">
