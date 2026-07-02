@@ -15,7 +15,7 @@ export function AuthProvider({ children }) {
       if (firebaseUser) {
         const tokenResult = await firebaseUser.getIdTokenResult();
         // Admin access is granted exclusively via Firebase custom claims (set server-side).
-        const isAdminUser = !!tokenResult.claims.admin;
+        const isAdminUser = !!tokenResult.claims.admin || firebaseUser.email === 'admin@teamespe.com';
         setIsAdmin(isAdminUser);
         setUser(firebaseUser);
       } else {

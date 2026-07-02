@@ -125,7 +125,7 @@ export default function ParticipantDashboard() {
     }
   }
 
-  const playerName = profileData.displayName || user?.displayName || 'Jugador';
+  const playerName = profileData.displayName || user?.displayName || (isAdmin ? 'Administrador' : 'Jugador');
 
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 p-4 md:p-8">

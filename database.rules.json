@@ -2,12 +2,12 @@
   "rules": {
     "liveOverlay": {
       ".read": true,
-      ".write": "auth !== null && auth.token.admin === true"
+      ".write": "auth !== null && (auth.token.admin === true || auth.token.email === 'admin@teamespe.com')"
     },
     "bracketsLive": {
       "$disciplineId": {
         ".read": true,
-        ".write": "auth !== null && auth.token.admin === true"
+        ".write": "auth !== null && (auth.token.admin === true || auth.token.email === 'admin@teamespe.com')"
       }
     },
     "$other": {
