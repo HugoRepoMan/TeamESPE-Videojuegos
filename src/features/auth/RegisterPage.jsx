@@ -23,7 +23,7 @@ const FIREBASE_ERRORS = {
   'auth/weak-password': 'La contrasena es muy debil. Usa al menos 6 caracteres.',
   'auth/operation-not-allowed': 'El registro esta deshabilitado temporalmente.',
   'auth/too-many-requests': 'Demasiados intentos. Intenta de nuevo mas tarde.',
-  'custom/university-id-already-in-use': 'El ID de la universidad ya está registrado en otra cuenta.',
+  'custom/university-id-already-in-use': 'Este Token/ID de universidad ya ha sido utilizado para registrar otra cuenta.',
 };
 
 export default function RegisterPage() {
@@ -92,8 +92,8 @@ export default function RegisterPage() {
     },
     {
       id: 'universityId',
-      label: 'ID de Universidad',
-      type: 'text',
+      label: 'Token/ID de Universidad',
+      type: 'password',
       autoComplete: 'off',
       placeholder: 'L00000000',
       icon: IdCard,
