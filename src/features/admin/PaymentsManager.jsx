@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { doc, updateDoc, collection, addDoc, onSnapshot, query, orderBy } from 'firebase/firestore';
-import { Check, X, Filter, Search, FileText } from 'lucide-react';
+import { Check, X, Filter, Search, FileText, Trash2 } from 'lucide-react';
 import { db } from '../../firebase/client';
+import { deleteRegistration } from '../../firebase/services';
 import HudCard from '../../components/ui/HudCard';
 import StatusBadge from '../../components/ui/StatusBadge';
 import DiagonalButton from '../../components/ui/DiagonalButton';
@@ -103,6 +104,26 @@ export default function PaymentsManager() {
     }
   }
 
+  async function handleDelete(registrationId) {
+    if (!window.confirm('¿Estás seguro de que deseas eliminar este registro por completo? Esto eliminará la inscripción y el registro en tesorería asociado. Esta acción no se puede deshacer.')) {
+      return;
+    }
+    
+    setMessage('');
+    setProcessing(registrationId);
+    try {
+      await deleteRegistration(registrationId);
+      // Actualizamos estado local
+      setRegistrations((prev) => prev.filter((r) => r.id !== registrationId));
+      setMessage('Registro eliminado correctamente.');
+    } catch (err) {
+      console.error(err);
+      setMessage('Error al eliminar el registro.');
+    } finally {
+      setProcessing(null);
+    }
+  }
+
   return (
     <div className="min-h-screen bg-gray-950 text-gray-100 p-4 md:p-8">
       <SectionTitle>Gestion de Pagos</SectionTitle>
@@ -198,28 +219,39 @@ export default function PaymentsManager() {
                     )}
                   </td>
                   <td className="py-3">
-                    {status === 'pending' ? (
-                      <div className="flex gap-2">
-                        <button
-                          onClick={() => handleAction(reg.id, 'approve')}
-                          disabled={processing === reg.id}
-                          className="flex items-center gap-1 px-3 py-1 bg-green-600/20 border border-green-500/50 text-green-400 text-xs hover:bg-green-600/40 transition-colors disabled:opacity-50"
-                        >
-                          <Check className="w-3 h-3" />
-                          Aprobar
-                        </button>
-                        <button
-                          onClick={() => handleAction(reg.id, 'reject')}
-                          disabled={processing === reg.id}
-                          className="flex items-center gap-1 px-3 py-1 bg-red-600/20 border border-red-500/50 text-red-400 text-xs hover:bg-red-600/40 transition-colors disabled:opacity-50"
-                        >
-                          <X className="w-3 h-3" />
-                          Rechazar
-                        </button>
-                      </div>
-                    ) : (
-                      <span className="text-gray-600 text-xs">-</span>
-                    )}
+                    <div className="flex gap-2">
+                      {status === 'pending' ? (
+                        <>
+                          <button
+                            onClick={() => handleAction(reg.id, 'approve')}
+                            disabled={processing === reg.id}
+                            className="flex items-center gap-1 px-3 py-1 bg-green-600/20 border border-green-500/50 text-green-400 text-xs hover:bg-green-600/40 transition-colors disabled:opacity-50"
+                          >
+                            <Check className="w-3 h-3" />
+                            Aprobar
+                          </button>
+                          <button
+                            onClick={() => handleAction(reg.id, 'reject')}
+                            disabled={processing === reg.id}
+                            className="flex items-center gap-1 px-3 py-1 bg-red-600/20 border border-red-500/50 text-red-400 text-xs hover:bg-red-600/40 transition-colors disabled:opacity-50"
+                          >
+                            <X className="w-3 h-3" />
+                            Rechazar
+                          </button>
+                        </>
+                      ) : (
+                        <span className="text-gray-600 text-xs">-</span>
+                      )}
+                      
+                      <button
+                        onClick={() => handleDelete(reg.id)}
+                        disabled={processing === reg.id}
+                        className="flex items-center gap-1 px-2 py-1 bg-red-900/40 border border-red-700/50 text-red-300 text-xs hover:bg-red-900/60 transition-colors disabled:opacity-50 ml-auto"
+                        title="Eliminar Registro"
+                      >
+                        <Trash2 className="w-3 h-3" />
+                      </button>
+                    </div>
                   </td>
                 </tr>
               )})}

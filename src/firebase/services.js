@@ -330,3 +330,26 @@ export async function deleteMatchesByDiscipline(disciplineId) {
   const deletePromises = snap.docs.map(doc => deleteDoc(doc.ref));
   await Promise.all(deletePromises);
 }
+
+/**
+ * Delete a registration and its associated treasury entry if it exists.
+ * @param {string} registrationId - The registration document ID.
+ * @returns {Promise<void>}
+ */
+export async function deleteRegistration(registrationId) {
+  const safeRegId = sanitizeDocId(registrationId);
+  
+  // Find treasury entry associated with this registration
+  const q = query(
+    collection(db, 'treasury'),
+    where('registrationId', '==', safeRegId)
+  );
+  const treasurySnap = await getDocs(q);
+  
+  // Delete the registration doc
+  await deleteDoc(doc(db, 'registrations', safeRegId));
+  
+  // Delete associated treasury docs (usually just one, but handle multiple just in case)
+  const deletePromises = treasurySnap.docs.map(docSnap => deleteDoc(docSnap.ref));
+  await Promise.all(deletePromises);
+}

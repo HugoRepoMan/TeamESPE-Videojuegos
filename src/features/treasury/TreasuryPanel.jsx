@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from 'react';
 import { collection, onSnapshot, query, orderBy } from 'firebase/firestore';
 import { db } from '../../firebase/client';
+import { deleteRegistration } from '../../firebase/services';
 import { calculateRevenueByDiscipline, getPaymentStats } from '../../lib/treasury';
 import { exportPlayersCSV, exportRevenueCSV } from '../../lib/csv';
 import HudCard from '../../components/ui/HudCard';
@@ -9,7 +10,7 @@ import DiagonalButton from '../../components/ui/DiagonalButton';
 import StatusBadge from '../../components/ui/StatusBadge';
 import SectionTitle from '../../components/ui/SectionTitle';
 import GameBadge from '../../components/ui/GameBadge';
-import { DollarSign, Download, Filter, BarChart3, Users } from 'lucide-react';
+import { DollarSign, Download, Filter, BarChart3, Users, Trash2 } from 'lucide-react';
 
 
 
@@ -27,6 +28,7 @@ export default function TreasuryPanel() {
   const [registrations, setRegistrations] = useState([]);
   const [filterDiscipline, setFilterDiscipline] = useState('');
   const [filterStatus, setFilterStatus] = useState('');
+  const [processing, setProcessing] = useState(null);
 
   useEffect(() => {
     const q = query(collection(db, 'registrations'), orderBy('createdAt', 'desc'));
@@ -59,6 +61,23 @@ export default function TreasuryPanel() {
 
   const handleExportRevenue = () => {
     exportRevenueCSV(registrations, SEED_DISCIPLINES);
+  };
+
+  const handleDelete = async (registrationId) => {
+    if (!window.confirm('¿Estás seguro de que deseas eliminar este registro por completo? Esta acción no se puede deshacer.')) {
+      return;
+    }
+    
+    setProcessing(registrationId);
+    try {
+      await deleteRegistration(registrationId);
+      setRegistrations((prev) => prev.filter((r) => r.id !== registrationId));
+    } catch (err) {
+      console.error(err);
+      alert('Error al eliminar el registro.');
+    } finally {
+      setProcessing(null);
+    }
   };
 
   return (
@@ -134,6 +153,7 @@ export default function TreasuryPanel() {
                     <th className="py-3 px-4 font-medium">Disciplina</th>
                     <th className="py-3 px-4 font-medium">Monto</th>
                     <th className="py-3 px-4 font-medium">Estado</th>
+                    <th className="py-3 px-4 font-medium">Acciones</th>
                   </tr>
                 </thead>
                 <tbody className="text-sm">
@@ -152,12 +172,22 @@ export default function TreasuryPanel() {
                         <td className="py-3 px-4">
                           <StatusBadge status={reg.paymentStatus || 'pending'} />
                         </td>
+                        <td className="py-3 px-4">
+                          <button
+                            onClick={() => handleDelete(reg.id)}
+                            disabled={processing === reg.id}
+                            className="flex items-center gap-1 px-2 py-1 bg-red-900/40 border border-red-700/50 text-red-300 text-xs hover:bg-red-900/60 transition-colors disabled:opacity-50"
+                            title="Eliminar Registro"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </td>
                       </tr>
                     );
                   })}
                   {filteredRegistrations.length === 0 && (
                     <tr>
-                      <td colSpan="4" className="py-8 text-center text-hud-text-secondary italic">
+                      <td colSpan="5" className="py-8 text-center text-hud-text-secondary italic">
                         No se encontraron registros.
                       </td>
                     </tr>
