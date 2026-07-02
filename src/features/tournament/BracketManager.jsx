@@ -256,8 +256,8 @@ export default function BracketManager() {
       playerBScore: playerBScoreTotal,
       bo3Games: games,
       status: winnerId ? 'completed' : match.status,
-      scheduledTime: scheduledTime || undefined,
-      winnerId: winnerId || undefined,
+      scheduledTime: scheduledTime || null,
+      winnerId: winnerId || null,
     };
 
     const result = matchResultSchema.safeParse(resultData);
