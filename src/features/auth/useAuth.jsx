@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, createContext, useCallback } from 'react';
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, collection, query, where, getDocs, serverTimestamp } from 'firebase/firestore';
 import { auth, db } from '../../firebase/client';
 
 const AuthContext = createContext(null);
@@ -31,12 +31,24 @@ export function AuthProvider({ children }) {
     return signInWithEmailAndPassword(auth, email, password);
   }, []);
 
-  const register = useCallback(async (email, password, displayName) => {
+  const register = useCallback(async (email, password, displayName, universityId) => {
+    // Verificar si el ID de la universidad ya está registrado
+    if (universityId) {
+      const q = query(collection(db, 'users'), where('universityId', '==', universityId));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const error = new Error('El ID de la universidad ya está registrado en otra cuenta.');
+        error.code = 'custom/university-id-already-in-use';
+        throw error;
+      }
+    }
+
     const credential = await createUserWithEmailAndPassword(auth, email, password);
     await setDoc(doc(db, 'users', credential.user.uid), {
       uid: credential.user.uid,
       displayName,
       email,
+      universityId: universityId || '',
       nick: '',
       teamName: '',
       roleVisible: 'player',

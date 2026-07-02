@@ -1,13 +1,14 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { UserPlus, Mail, Lock, User, AlertTriangle, Gamepad2 } from 'lucide-react';
+import { UserPlus, Mail, Lock, User, AlertTriangle, Gamepad2, IdCard } from 'lucide-react';
 import { useAuth } from './useAuth';
 import HudCard from '../../components/ui/HudCard';
 import DiagonalButton from '../../components/ui/DiagonalButton';
 
 const registerSchema = z.object({
   displayName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(50, 'El nombre no puede exceder 50 caracteres'),
+  universityId: z.string().regex(/^L\d{8}$/, 'El ID debe tener el formato L seguido de 8 números (ej. L00431822)'),
   email: z.string().min(1, 'El correo es obligatorio').email('Correo no valido'),
   password: z.string().min(6, 'La contrasena debe tener al menos 6 caracteres'),
   confirmPassword: z.string().min(1, 'Confirma tu contrasena'),
@@ -22,6 +23,7 @@ const FIREBASE_ERRORS = {
   'auth/weak-password': 'La contrasena es muy debil. Usa al menos 6 caracteres.',
   'auth/operation-not-allowed': 'El registro esta deshabilitado temporalmente.',
   'auth/too-many-requests': 'Demasiados intentos. Intenta de nuevo mas tarde.',
+  'custom/university-id-already-in-use': 'El ID de la universidad ya está registrado en otra cuenta.',
 };
 
 export default function RegisterPage() {
@@ -30,6 +32,7 @@ export default function RegisterPage() {
 
   const [formData, setFormData] = useState({
     displayName: '',
+    universityId: '',
     email: '',
     password: '',
     confirmPassword: '',
@@ -64,7 +67,7 @@ export default function RegisterPage() {
 
     setSubmitting(true);
     try {
-      await register(formData.email, formData.password, formData.displayName);
+      await register(formData.email, formData.password, formData.displayName, formData.universityId);
       navigate('/dashboard', { replace: true });
     } catch (err) {
       console.error('Registration error:', err);
@@ -86,6 +89,14 @@ export default function RegisterPage() {
       autoComplete: 'name',
       placeholder: 'Tu nombre completo',
       icon: User,
+    },
+    {
+      id: 'universityId',
+      label: 'ID de Universidad',
+      type: 'text',
+      autoComplete: 'off',
+      placeholder: 'L00000000',
+      icon: IdCard,
     },
     {
       id: 'email',
