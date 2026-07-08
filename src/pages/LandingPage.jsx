@@ -96,20 +96,25 @@ function CountdownTimer() {
   }, []);
 
   return (
-    <div className="flex items-center justify-center gap-4 mb-10">
-      <div className="flex flex-col items-center justify-center bg-hud-surface border border-hud-accent/50 w-20 h-24 clip-diagonal shadow-[0_0_15px_rgba(227,0,43,0.2)]">
-        <span className="text-3xl font-black text-hud-text">{String(timeLeft.days).padStart(2, '0')}</span>
-        <span className="text-[10px] uppercase text-hud-text-secondary tracking-widest mt-1">Días</span>
+    <div className="flex items-center justify-center gap-2 sm:gap-4 mb-10">
+      <div className="flex flex-col items-center justify-center bg-hud-surface border border-hud-accent/50 w-16 sm:w-20 h-20 sm:h-24 clip-diagonal shadow-[0_0_15px_rgba(227,0,43,0.2)]">
+        <span className="text-2xl sm:text-3xl font-black text-hud-text">{String(timeLeft.days).padStart(2, '0')}</span>
+        <span className="text-[8px] sm:text-[10px] uppercase text-hud-text-secondary tracking-widest mt-1">Días</span>
       </div>
-      <div className="text-2xl font-black text-hud-accent animate-pulse">:</div>
-      <div className="flex flex-col items-center justify-center bg-hud-surface border border-hud-accent/50 w-20 h-24 clip-diagonal shadow-[0_0_15px_rgba(227,0,43,0.2)]">
-        <span className="text-3xl font-black text-hud-text">{String(timeLeft.hours).padStart(2, '0')}</span>
-        <span className="text-[10px] uppercase text-hud-text-secondary tracking-widest mt-1">Horas</span>
+      <div className="text-xl sm:text-2xl font-black text-hud-accent animate-pulse">:</div>
+      <div className="flex flex-col items-center justify-center bg-hud-surface border border-hud-accent/50 w-16 sm:w-20 h-20 sm:h-24 clip-diagonal shadow-[0_0_15px_rgba(227,0,43,0.2)]">
+        <span className="text-2xl sm:text-3xl font-black text-hud-text">{String(timeLeft.hours).padStart(2, '0')}</span>
+        <span className="text-[8px] sm:text-[10px] uppercase text-hud-text-secondary tracking-widest mt-1">Horas</span>
       </div>
-      <div className="text-2xl font-black text-hud-accent animate-pulse">:</div>
-      <div className="flex flex-col items-center justify-center bg-hud-surface border border-hud-accent/50 w-20 h-24 clip-diagonal shadow-[0_0_15px_rgba(227,0,43,0.2)]">
-        <span className="text-3xl font-black text-hud-text">{String(timeLeft.minutes).padStart(2, '0')}</span>
-        <span className="text-[10px] uppercase text-hud-text-secondary tracking-widest mt-1">Minutos</span>
+      <div className="text-xl sm:text-2xl font-black text-hud-accent animate-pulse">:</div>
+      <div className="flex flex-col items-center justify-center bg-hud-surface border border-hud-accent/50 w-16 sm:w-20 h-20 sm:h-24 clip-diagonal shadow-[0_0_15px_rgba(227,0,43,0.2)]">
+        <span className="text-2xl sm:text-3xl font-black text-hud-text">{String(timeLeft.minutes).padStart(2, '0')}</span>
+        <span className="text-[8px] sm:text-[10px] uppercase text-hud-text-secondary tracking-widest mt-1">Min</span>
+      </div>
+      <div className="text-xl sm:text-2xl font-black text-hud-accent animate-pulse">:</div>
+      <div className="flex flex-col items-center justify-center bg-hud-surface border border-hud-accent/50 w-16 sm:w-20 h-20 sm:h-24 clip-diagonal shadow-[0_0_15px_rgba(227,0,43,0.2)]">
+        <span className="text-2xl sm:text-3xl font-black text-hud-gold">{String(timeLeft.seconds).padStart(2, '0')}</span>
+        <span className="text-[8px] sm:text-[10px] uppercase text-hud-gold tracking-widest mt-1">Seg</span>
       </div>
     </div>
   );
