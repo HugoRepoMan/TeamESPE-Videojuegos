@@ -44,7 +44,7 @@ export default function MatchesPanel() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 p-4 md:p-8">
+    <div className="space-y-6">
       <SectionTitle>Mis Partidas</SectionTitle>
 
       {loading ? (

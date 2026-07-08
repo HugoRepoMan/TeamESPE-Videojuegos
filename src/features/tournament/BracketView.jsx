@@ -47,7 +47,7 @@ export default function BracketView() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-gray-100 p-4 md:p-8">
+    <div className="space-y-6">
       <div className="flex items-center gap-3 mb-6">
         <Swords className="w-6 h-6 text-red-500" />
         <h1 className="text-2xl font-bold text-gray-100">Brackets del Torneo</h1>
