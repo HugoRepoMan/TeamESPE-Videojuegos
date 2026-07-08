@@ -36,9 +36,10 @@ service cloud.firestore {
     match /users/{uid} {
       allow read: if request.auth != null && request.auth.uid == uid;
       allow create: if request.auth != null && request.auth.uid == uid
-        && !request.resource.data.keys().hasAny(['roleVisible'])
         && request.resource.data.displayName is string
-        && request.resource.data.email is string;
+        && request.resource.data.email is string
+        && (!('roleVisible' in request.resource.data) || request.resource.data.roleVisible == 'player')
+        && (!('role' in request.resource.data) || request.resource.data.role == 'player');
       allow update: if request.auth != null && request.auth.uid == uid
         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid', 'email', 'roleVisible', 'role', 'createdAt']);
       // Admin can read all users
