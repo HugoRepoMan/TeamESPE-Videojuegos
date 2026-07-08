@@ -206,7 +206,7 @@ export default function RegistrationsPanel() {
           </div>
         )}
 
-        <form onSubmit={handleRegister} className="space-y-4 max-w-md">
+        <form onSubmit={handleRegister} className="space-y-4 max-w-xl">
           <div>
             <label className="block text-sm text-gray-400 mb-1">Disciplina</label>
             <select
@@ -250,27 +250,41 @@ export default function RegistrationsPanel() {
               placeholder="Nombre del equipo"
             />
           </div>
-          <div className="bg-gray-800/50 border border-gray-700 p-4 space-y-4">
+          <div className="bg-gray-800/50 border border-gray-700 p-4 space-y-4 rounded-md">
             <p className="text-sm text-gray-300">
               Costo por disciplina: <span className="text-red-400 font-bold">${COST_PER_DISCIPLINE.toFixed(2)}</span>
             </p>
-            <div className="flex flex-col md:flex-row gap-4 items-start">
-              <div className="flex-shrink-0 bg-white p-2 rounded w-40 h-40 flex items-center justify-center border border-dashed border-gray-500 text-center">
+            <div className="flex flex-col sm:flex-row gap-6 items-start">
+              <div className="flex-shrink-0 bg-white p-2 rounded w-40 h-40 flex items-center justify-center border border-dashed border-gray-500 text-center mx-auto sm:mx-0">
                 <img src="/qr-pago.png" alt="Sube tu imagen qr-pago.png en public/" className="max-w-full max-h-full object-contain" />
               </div>
-              <div className="flex-1 space-y-2">
-                <p className="text-sm text-gray-400">
-                  Escanea el codigo QR para realizar el pago o deposita directamente en la cuenta. Luego, adjunta el comprobante aqui:
-                </p>
-                <label className="flex items-center gap-2 cursor-pointer border border-gray-600 bg-gray-900 px-3 py-2 text-sm text-gray-300 hover:border-red-500 transition-colors w-full">
-                  <UploadCloud size={16} className="text-red-500" />
-                  <span className="truncate">{receiptFile ? receiptFile.name : "Subir comprobante (Imagen/PDF)"}</span>
-                  <input type="file" className="hidden" accept="image/*,application/pdf" onChange={handleFileChange} />
-                </label>
-                {formErrors.receiptFile && (
-                  <p className="text-red-400 text-xs mt-1">{formErrors.receiptFile}</p>
-                )}
+              <div className="flex-1 space-y-3 min-w-0 w-full">
+                <div className="text-sm text-gray-400 space-y-1">
+                  <p className="text-gray-200 font-semibold mb-2">Transferencia interbancaria:</p>
+                  <p>Banco Pichincha</p>
+                  <p>Cuenta de ahorro transaccional</p>
+                  <p>Número: 2208241227</p>
+                  <p>Nombre: Shadya Nicole Reyes Zambrano</p>
+                  <p>CI: 0803702851</p>
+                </div>
+                <div className="text-xs text-yellow-500/90 bg-yellow-500/10 border border-yellow-500/20 p-2 rounded">
+                  <p>Dudas o confirmaciones: <strong>+593 96 308 3389</strong></p>
+                </div>
               </div>
+            </div>
+            
+            <div className="pt-2 border-t border-gray-700/50">
+              <p className="text-sm text-gray-300 mb-2">
+                Escanea el código QR o deposita en la cuenta, y luego adjunta el comprobante aquí:
+              </p>
+              <label className="flex items-center gap-2 cursor-pointer border border-gray-600 bg-gray-900 px-3 py-2 text-sm text-gray-300 hover:border-red-500 transition-colors w-full rounded">
+                <UploadCloud size={16} className="text-red-500 flex-shrink-0" />
+                <span className="truncate">{receiptFile ? receiptFile.name : "Subir comprobante (Imagen/PDF)"}</span>
+                <input type="file" className="hidden" accept="image/*,application/pdf" onChange={handleFileChange} />
+              </label>
+              {formErrors.receiptFile && (
+                <p className="text-red-400 text-xs mt-1">{formErrors.receiptFile}</p>
+              )}
             </div>
           </div>
           <DiagonalButton type="submit" disabled={submitting}>
