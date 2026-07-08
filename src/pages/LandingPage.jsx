@@ -19,20 +19,19 @@ const DISCIPLINES = [
 
 const SCHEDULE = [
   { 
-    day: 'Auditorio Principal', 
-    date: '17 Jul 2026 • 09:00 - 16:00', 
-    events: ['Gran Final League of Legends', 'Finales de Consolas', 'Premiación'] 
-  },
-  { 
-    day: 'Laboratorio de Cómputo', 
-    date: '17 Jul 2026 • 09:00 - 16:00', 
-    events: ['Clasificatorias League of Legends', 'Torneo de Minecraft', 'Fortnite'] 
-  },
-  { 
-    day: 'Zona Móvil / Hall', 
-    date: '17 Jul 2026 • 09:00 - 16:00', 
-    events: ['Torneo Clash Royale', 'Mortal Kombat', 'FIFA 26', 'Dragon Ball'] 
-  },
+    day: 'Laboratorio 1', 
+    date: '17 Jul 2026 • Horarios por confirmar', 
+    events: [
+      'Gran Final League of Legends',
+      'Clasificatorias League of Legends',
+      'Torneo de Minecraft',
+      'Torneo Clash Royale',
+      'Fortnite',
+      'Dragon Ball Sparking Zero',
+      'FIFA 26',
+      'Mortal Kombat'
+    ] 
+  }
 ];
 
 const GAME_COLORS = {
@@ -110,12 +109,7 @@ function CountdownTimer() {
       <div className="text-2xl font-black text-hud-accent animate-pulse">:</div>
       <div className="flex flex-col items-center justify-center bg-hud-surface border border-hud-accent/50 w-20 h-24 clip-diagonal shadow-[0_0_15px_rgba(227,0,43,0.2)]">
         <span className="text-3xl font-black text-hud-text">{String(timeLeft.minutes).padStart(2, '0')}</span>
-        <span className="text-[10px] uppercase text-hud-text-secondary tracking-widest mt-1">Min</span>
-      </div>
-      <div className="text-2xl font-black text-hud-accent animate-pulse">:</div>
-      <div className="flex flex-col items-center justify-center bg-hud-surface border border-hud-accent/50 w-20 h-24 clip-diagonal shadow-[0_0_15px_rgba(227,0,43,0.2)]">
-        <span className="text-3xl font-black text-hud-gold">{String(timeLeft.seconds).padStart(2, '0')}</span>
-        <span className="text-[10px] uppercase text-hud-gold tracking-widest mt-1">Seg</span>
+        <span className="text-[10px] uppercase text-hud-text-secondary tracking-widest mt-1">Minutos</span>
       </div>
     </div>
   );
@@ -198,12 +192,14 @@ export default function LandingPage() {
               <>
                 <Link
                   to="/login"
-                  className="text-sm font-bold uppercase tracking-wider text-hud-text-secondary hover:text-hud-accent transition-colors"
+                  className="text-hud-text-secondary hover:text-hud-text transition-colors text-sm font-bold uppercase tracking-widest"
                 >
                   Ingresar
                 </Link>
                 <Link to="/register">
-                  <DiagonalButton>Registro</DiagonalButton>
+                  <DiagonalButton className="!px-4 !py-2 text-xs">
+                    Inscribirse
+                  </DiagonalButton>
                 </Link>
               </>
             )}
@@ -212,41 +208,28 @@ export default function LandingPage() {
       </nav>
 
       {/* ====================== HERO SECTION ====================== */}
-      <section className="relative min-h-screen flex items-center justify-center pt-16 overflow-hidden">
-        {/* Background decorations */}
-        <div className="absolute inset-0 pointer-events-none">
-          {/* Corner accents */}
-          <div className="absolute top-20 left-0 w-32 h-px bg-gradient-to-r from-hud-accent to-transparent" />
-          <div className="absolute top-20 left-0 w-px h-32 bg-gradient-to-b from-hud-accent to-transparent" />
-          <div className="absolute bottom-0 right-0 w-48 h-px bg-gradient-to-l from-hud-accent to-transparent" />
-          <div className="absolute bottom-0 right-0 w-px h-48 bg-gradient-to-t from-hud-accent to-transparent" />
-
-          {/* Scan lines */}
-          <div className="absolute top-1/4 left-8 w-px h-64 bg-hud-accent/10 animate-scan" />
-          <div className="absolute top-1/3 right-12 w-px h-48 bg-hud-accent/10 animate-scan" />
-          <div className="absolute top-2/3 left-1/4 w-64 h-px bg-hud-accent/5" />
-          <div className="absolute top-1/2 right-1/4 w-48 h-px bg-hud-accent/5" />
-
-          {/* Grid pattern overlay */}
-          <div
-            className="absolute inset-0 opacity-[0.02]"
-            style={{
-              backgroundImage: 'linear-gradient(rgba(227,0,43,0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(227,0,43,0.3) 1px, transparent 1px)',
-              backgroundSize: '60px 60px',
-            }}
-          />
+      <section className="relative pt-32 pb-24 lg:pt-48 lg:pb-32 overflow-hidden flex flex-col items-center justify-center min-h-[90vh]">
+        
+        {/* Background elements */}
+        <div className="absolute inset-0 z-0">
+          <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-hud-accent/10 rounded-full blur-[100px] animate-pulse" />
+          <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-hud-gold/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
+          
+          {/* Grid pattern */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#e3002b_1px,transparent_1px),linear-gradient(to_bottom,#e3002b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_50%,#000_70%,transparent_100%)] opacity-[0.03]" />
         </div>
 
-        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center mt-8">
-          {/* Top decorative line */}
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <div className="h-px w-16 bg-hud-accent" />
-            <Timer size={20} className="text-hud-gold" />
-            <div className="h-px w-16 bg-hud-accent" />
+        <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          
+          {/* Top Badge */}
+          <div className="inline-flex items-center gap-2 bg-hud-surface/50 border border-hud-accent/30 px-4 py-2 mb-8 backdrop-blur-sm shadow-[0_0_10px_rgba(227,0,43,0.2)]">
+            <span className="w-2 h-2 bg-hud-accent rounded-full animate-pulse" />
+            <span className="text-hud-accent font-bold text-xs uppercase tracking-[0.2em]">Inscripciones Abiertas</span>
           </div>
 
-          {/* Title */}
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black uppercase tracking-tight leading-none mb-6">
+          {/* Main Title */}
+          <h1 className="text-5xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter mb-6 leading-none">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-gray-100 to-gray-500 block mb-2">Primer</span>
             <span className="text-hud-text">Torneo</span>
             <br />
             <span className="text-hud-accent">ESPE Gaming</span>
@@ -257,12 +240,6 @@ export default function LandingPage() {
             Un solo día. 7 disciplinas. Un campeón por videojuego.
             El torneo interuniversitario más grande de Santo Domingo.
           </p>
-
-          {/* Date badge & Timer */}
-          <div className="inline-flex items-center gap-2 bg-hud-surface border border-hud-border px-4 py-2 mb-6 text-sm">
-            <Calendar size={16} className="text-hud-gold" />
-            <span className="text-hud-text-secondary font-semibold uppercase tracking-wider">17 DE JULIO, 2026 • 09:00 AM</span>
-          </div>
 
           <CountdownTimer />
 
@@ -298,83 +275,75 @@ export default function LandingPage() {
           </div>
 
           {/* Stats bar */}
-          <div className="mt-16 grid grid-cols-3 gap-4 max-w-lg mx-auto">
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-black text-hud-accent">7</div>
-              <div className="text-xs uppercase tracking-wider text-hud-text-secondary mt-1">Disciplinas</div>
+          <div className="mt-20 pt-10 border-t border-hud-border grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div>
+              <div className="text-3xl font-black text-hud-text">7</div>
+              <div className="text-xs text-hud-text-secondary uppercase tracking-widest mt-1">Disciplinas</div>
             </div>
-            <div className="text-center border-x border-hud-border">
-              <div className="text-2xl sm:text-3xl font-black text-hud-gold">$2</div>
-              <div className="text-xs uppercase tracking-wider text-hud-text-secondary mt-1">Inscripción</div>
+            <div>
+              <div className="text-3xl font-black text-hud-text">$2</div>
+              <div className="text-xs text-hud-text-secondary uppercase tracking-widest mt-1">Inscripción</div>
             </div>
-            <div className="text-center">
-              <div className="text-2xl sm:text-3xl font-black text-hud-accent">1</div>
-              <div className="text-xs uppercase tracking-wider text-hud-text-secondary mt-1">Solo Día</div>
+            <div>
+              <div className="text-3xl font-black text-hud-text">1 Día</div>
+              <div className="text-xs text-hud-text-secondary uppercase tracking-widest mt-1">De Competencia</div>
+            </div>
+            <div>
+              <div className="text-3xl font-black text-hud-text">Premios</div>
+              <div className="text-xs text-hud-text-secondary uppercase tracking-widest mt-1">En Efectivo</div>
             </div>
           </div>
         </div>
-
-        {/* Bottom fade */}
-        <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-hud-bg to-transparent" />
       </section>
 
-      {/* ====================== DISCIPLINES SECTION ====================== */}
-      <section id="disciplines" className="relative py-24">
+      {/* ====================== GAMES SECTION ====================== */}
+      <section id="disciplines" className="relative py-24 z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <SectionTitle className="justify-center">Disciplinas</SectionTitle>
-            <p className="text-hud-text-secondary mt-4 max-w-xl mx-auto">
-              Compite en 7 juegos diferentes. Elige tu disciplina y demuestra quién es el mejor.
-            </p>
+          <div className="flex flex-col md:flex-row justify-between items-end mb-12">
+            <div>
+              <SectionTitle>Disciplinas Oficiales</SectionTitle>
+              <p className="text-hud-text-secondary mt-2 max-w-xl">
+                Elige tu especialidad y demuestra que eres el mejor. Puedes inscribirte en múltiples disciplinas si los horarios lo permiten.
+              </p>
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {DISCIPLINES.map((game) => (
-              <HudCard key={game.id} clip="diagonal" className="group hover:border-hud-accent/40 transition-colors relative overflow-hidden">
-                {/* Top accent bar */}
-                <div
-                  className="absolute top-0 left-0 right-0 h-0.5"
-                  style={{ backgroundColor: GAME_COLORS[game.slug] }}
-                />
-
-                <div className="flex flex-col gap-4">
-                  {/* Game badge */}
-                  <GameBadge name={game.name} slug={game.slug} />
-
-                  {/* Game info */}
-                  <div className="space-y-3 mt-2">
-                    <div className="flex items-center gap-2 text-sm text-hud-text-secondary">
-                      <Users size={14} />
-                      <span>Modo: <span className="text-hud-text font-semibold">{game.mode}</span></span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-hud-text-secondary">
-                      <DollarSign size={14} />
-                      <span>Inscripción: <span className="text-hud-gold font-semibold">$2.00</span></span>
-                    </div>
-                    <div className="flex items-center gap-2 text-sm text-hud-text-secondary">
-                      <Target size={14} />
-                      <span>Formato: <span className="text-hud-text font-semibold">Eliminación directa</span></span>
-                    </div>
+              <HudCard key={game.id} className="group hover:-translate-y-2 transition-transform duration-300">
+                <div className="flex justify-between items-start mb-6">
+                  <div className="p-3 bg-hud-bg border border-hud-border group-hover:border-hud-accent/50 transition-colors">
+                    <Gamepad2 size={24} style={{ color: GAME_COLORS[game.id] }} />
                   </div>
-
-                  {/* Action */}
-                  <Link
-                    to="/register"
-                    className="mt-2 flex items-center gap-1 text-xs font-bold uppercase tracking-wider text-hud-accent hover:text-hud-accent-hover transition-colors"
-                  >
-                    Inscribirme
-                    <ChevronRight size={14} />
+                  <div className="text-xs font-bold uppercase tracking-wider text-hud-text-secondary bg-hud-surface px-2 py-1">
+                    {game.mode}
+                  </div>
+                </div>
+                
+                <h3 className="text-xl font-black text-hud-text mb-2">{game.name}</h3>
+                
+                <div className="mt-6 flex items-center justify-between text-sm">
+                  <div className="flex items-center gap-1 text-hud-accent">
+                    <DollarSign size={16} />
+                    <span className="font-bold">2.00 USD</span>
+                  </div>
+                  <Link to="/register" className="text-hud-text-secondary hover:text-hud-text font-bold uppercase tracking-wider transition-colors flex items-center gap-1">
+                    Inscribirse <ChevronRight size={14} />
                   </Link>
                 </div>
               </HudCard>
             ))}
+          </div>
 
-            {/* Summary card */}
-            <HudCard variant="accent" clip="diagonal" className="flex flex-col items-center justify-center text-center">
-              <Zap size={32} className="text-hud-accent mb-3" />
-              <p className="text-lg font-bold uppercase tracking-wider mb-2">Juega en Varios</p>
-              <p className="text-sm text-hud-text-secondary mb-4">
-                Inscríbete en tus juegos favoritos de manera individual y demuestra tu nivel en cada uno.
+          {/* Quick Registration CTA */}
+          <div className="mt-16 text-center">
+            <HudCard className="inline-block relative overflow-hidden">
+              {/* Animated line */}
+              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-hud-accent to-transparent animate-pulse" />
+              
+              <h3 className="text-2xl font-black mb-2">¿Listo para competir?</h3>
+              <p className="text-hud-text-secondary mb-6 max-w-md mx-auto">
+                Asegura tu lugar en el torneo. Los cupos son limitados y se asignan por orden de registro y pago validado.
               </p>
               {user ? (
                 <Link to={isAdmin ? "/admin" : "/dashboard"}>
@@ -404,15 +373,15 @@ export default function LandingPage() {
           </div>
 
           {/* Timeline / Locations */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 max-w-2xl mx-auto gap-8">
             {SCHEDULE.map((block, idx) => (
               <HudCard key={idx} clip="diagonal" className="relative flex flex-col h-full">
                 {/* Location header */}
                 <div className="mb-4 pb-4 border-b border-hud-border">
-                  <h3 className="text-lg font-black uppercase tracking-wider text-hud-text mb-2">
+                  <h3 className="text-lg font-black uppercase tracking-wider text-hud-text mb-2 text-center">
                     {block.day}
                   </h3>
-                  <div className="flex items-center gap-2 text-sm text-hud-text-secondary">
+                  <div className="flex items-center justify-center gap-2 text-sm text-hud-text-secondary">
                     <Clock size={14} className="text-hud-gold" />
                     <span className="font-semibold">{block.date}</span>
                   </div>
