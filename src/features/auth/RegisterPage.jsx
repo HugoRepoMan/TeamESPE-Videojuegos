@@ -6,10 +6,23 @@ import { useAuth } from './useAuth';
 import HudCard from '../../components/ui/HudCard';
 import DiagonalButton from '../../components/ui/DiagonalButton';
 
+const ALLOWED_DOMAINS = [
+  'gmail.com', 'hotmail.com', 'outlook.com', 'yahoo.com', 'live.com', 'icloud.com', 'espe.edu.ec'
+];
+
 const registerSchema = z.object({
   displayName: z.string().min(2, 'El nombre debe tener al menos 2 caracteres').max(50, 'El nombre no puede exceder 50 caracteres'),
   universityId: z.string().regex(/^L\d{8}$/, 'El ID debe tener el formato L seguido de 8 números (ej. L00431822)'),
-  email: z.string().min(1, 'El correo es obligatorio').email('Correo no valido'),
+  email: z.string()
+    .min(1, 'El correo es obligatorio')
+    .email('Correo no valido')
+    .refine(
+      (val) => {
+        const domain = val.split('@')[1]?.toLowerCase();
+        return ALLOWED_DOMAINS.includes(domain);
+      },
+      { message: 'Por favor usa un correo electronico principal o institucional (gmail, hotmail, espe.edu.ec, etc).' }
+    ),
   password: z.string().min(6, 'La contrasena debe tener al menos 6 caracteres'),
   confirmPassword: z.string().min(1, 'Confirma tu contrasena'),
 }).refine((data) => data.password === data.confirmPassword, {
