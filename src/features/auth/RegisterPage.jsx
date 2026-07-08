@@ -90,7 +90,7 @@ export default function RegisterPage() {
     {
       id: 'universityId',
       label: 'Token/ID de Universidad',
-      type: 'password',
+      type: 'text',
       autoComplete: 'off',
       placeholder: 'L00000000',
       icon: IdCard,

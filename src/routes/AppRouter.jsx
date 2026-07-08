@@ -2,6 +2,7 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthProvider } from '../features/auth/useAuth';
 import ProtectedRoute from '../components/ProtectedRoute';
 import AdminRoute from '../components/AdminRoute';
+import JudgeRoute from '../components/JudgeRoute';
 import PageShell from '../components/ui/PageShell';
 
 // Pages & Features
@@ -57,6 +58,10 @@ const router = createBrowserRouter([
   {
     path: '/admin/brackets',
     element: <AdminRoute><PageShell title="Gestor de Brackets" showBack><BracketManager /></PageShell></AdminRoute>
+  },
+  {
+    path: '/juez',
+    element: <JudgeRoute><PageShell title="Panel de Juez" showBack><BracketManager /></PageShell></JudgeRoute>
   },
   {
     path: '/admin/treasury',

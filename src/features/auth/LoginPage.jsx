@@ -22,18 +22,43 @@ const FIREBASE_ERRORS = {
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, resetPassword } = useAuth();
 
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errors, setErrors] = useState({});
   const [firebaseError, setFirebaseError] = useState('');
   const [submitting, setSubmitting] = useState(false);
+  
+  const [isResetting, setIsResetting] = useState(false);
+  const [resetSent, setResetSent] = useState(false);
+  const [resetError, setResetError] = useState('');
 
   function handleChange(e) {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
     setErrors((prev) => ({ ...prev, [name]: undefined }));
     setFirebaseError('');
+    setResetError('');
+  }
+
+  async function handleResetPassword() {
+    if (!formData.email) {
+      setResetError('Ingresa tu correo en el campo de arriba para poder enviarte el enlace.');
+      return;
+    }
+    
+    setIsResetting(true);
+    setResetError('');
+    setResetSent(false);
+    
+    try {
+      await resetPassword(formData.email);
+      setResetSent(true);
+    } catch (err) {
+      setResetError('No pudimos enviar el correo. Verifica que la dirección sea correcta.');
+    } finally {
+      setIsResetting(false);
+    }
   }
 
   async function handleSubmit(e) {
@@ -161,6 +186,27 @@ export default function LoginPage() {
               {submitting ? 'Ingresando...' : 'Ingresar'}
             </DiagonalButton>
           </form>
+
+          {/* Forgot password */}
+          <div className="mt-4 text-center">
+            <button 
+              onClick={handleResetPassword}
+              disabled={isResetting}
+              className="text-xs text-hud-text-secondary hover:text-hud-accent transition-colors underline decoration-transparent hover:decoration-hud-accent"
+            >
+              {isResetting ? 'Enviando enlace...' : '¿Olvidaste tu contraseña?'}
+            </button>
+            {resetSent && (
+              <p className="mt-2 text-xs text-green-400 font-bold">
+                ¡Enlace enviado! Revisa tu bandeja de entrada o spam.
+              </p>
+            )}
+            {resetError && (
+              <p className="mt-2 text-xs text-hud-error">
+                {resetError}
+              </p>
+            )}
+          </div>
 
           {/* Register link */}
           <div className="mt-6 pt-4 border-t border-hud-border text-center">

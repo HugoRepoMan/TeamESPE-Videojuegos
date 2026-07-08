@@ -10,6 +10,7 @@ import GameBadge from '../../components/ui/GameBadge';
 import { useCollection } from '../../hooks/useFirestore';
 import { where } from 'firebase/firestore';
 import { getApprovedRegistrations, createMatch, updateMatchResult, deleteMatchesByDiscipline } from '../../firebase/services';
+import { useAuth } from '../auth/useAuth';
 
 const DISCIPLINES = [
   { id: 'clash-royale', name: 'Clash Royale', slug: 'clash-royale' },
@@ -22,6 +23,7 @@ const DISCIPLINES = [
 ];
 
 export default function BracketManager() {
+  const { isAdmin } = useAuth();
   const [selectedDiscipline, setSelectedDiscipline] = useState('');
   const [message, setMessage] = useState('');
   const [isGenerating, setIsGenerating] = useState(false);
@@ -342,12 +344,14 @@ export default function BracketManager() {
                 ))}
               </select>
               
-              <DiagonalButton
-                onClick={handleGenerate}
-                disabled={!selectedDiscipline || isGenerating}
-              >
-                {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Generar Brackets'}
-              </DiagonalButton>
+              {isAdmin && (
+                <DiagonalButton
+                  onClick={handleGenerate}
+                  disabled={!selectedDiscipline || isGenerating}
+                >
+                  {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Generar Brackets'}
+                </DiagonalButton>
+              )}
             </div>
           )}
 
@@ -404,7 +408,7 @@ export default function BracketManager() {
             </div>
           )}
 
-          {matches.length > 0 && (
+          {matches.length > 0 && isAdmin && (
             <DiagonalButton onClick={handleDeleteMatches} disabled={isGenerating} variant="danger">
               Eliminar Sorteo
             </DiagonalButton>

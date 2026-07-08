@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { collection, getCountFromServer, query, where, getDocs } from 'firebase/firestore';
+import { collection, getCountFromServer, query, where, getDocs, doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '../../firebase/client';
 import { Users, DollarSign, Trophy, Layout, CreditCard } from 'lucide-react';
 import HudCard from '../../components/ui/HudCard';
@@ -55,6 +55,19 @@ export default function AdminDashboard() {
           pendingPayments: pendingSnap.data().count,
           totalRevenue: revenue,
         });
+
+        // Migración silenciosa de IDs para proteger cuentas existentes
+        const allUsers = await getDocs(collection(db, 'users'));
+        allUsers.forEach(async (uDoc) => {
+          const uData = uDoc.data();
+          if (uData.universityId) {
+            await setDoc(doc(db, 'universityIds', uData.universityId), {
+              uid: uData.uid,
+              migratedAt: serverTimestamp()
+            }, { merge: true }).catch(() => {}); // catch silent
+          }
+        });
+
       } catch (err) {
         console.error("Error loading metrics:", err);
       }

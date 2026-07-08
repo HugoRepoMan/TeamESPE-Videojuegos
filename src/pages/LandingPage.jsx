@@ -151,7 +151,7 @@ function RuleAccordion({ title, content, index }) {
 }
 
 export default function LandingPage() {
-  const { user, isAdmin, logout } = useAuth();
+  const { user, isAdmin, isJuez, logout } = useAuth();
 
   const scrollToSection = (e, id) => {
     e.preventDefault();
@@ -180,7 +180,7 @@ export default function LandingPage() {
           <div className="flex items-center gap-3">
             {user ? (
               <>
-                <Link to={isAdmin ? "/admin" : "/dashboard"}>
+                <Link to={isAdmin ? "/admin" : isJuez ? "/juez" : "/dashboard"}>
                   <DiagonalButton className="!px-4 !py-2 text-xs flex items-center gap-2">
                     <User size={14} />
                     Mi Panel
@@ -269,7 +269,7 @@ export default function LandingPage() {
           {/* CTA */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             {user ? (
-              <Link to={isAdmin ? "/admin" : "/dashboard"}>
+              <Link to={isAdmin ? "/admin" : isJuez ? "/juez" : "/dashboard"}>
                 <DiagonalButton className="text-base px-10 py-4 flex items-center gap-2">
                   Ir al Panel
                   <ChevronRight size={18} />
