@@ -15,7 +15,9 @@ export function AuthProvider({ children }) {
     const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const tokenResult = await firebaseUser.getIdTokenResult();
-        const isAdminUser = !!tokenResult.claims.admin || firebaseUser.email === 'admin@teamespe.com';
+        // Admin access is granted EXCLUSIVELY via Firebase custom claims (set server-side).
+        // Never use email or Firestore document fields to determine admin status.
+        const isAdminUser = !!tokenResult.claims.admin;
         
         // Cargar rol desde el documento del usuario
         let userRole = 'player';
@@ -28,7 +30,7 @@ export function AuthProvider({ children }) {
           console.error("Error loading user role", e);
         }
 
-        setIsAdmin(isAdminUser || userRole === 'admin');
+        setIsAdmin(isAdminUser);
         setIsJuez(userRole === 'juez');
         setUser(firebaseUser);
       } else {

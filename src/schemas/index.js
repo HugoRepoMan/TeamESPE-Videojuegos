@@ -27,9 +27,9 @@ export const paymentApprovalSchema = z.object({
   paymentReference: safeString(100).optional(),
 }).strict();
 
-// matchResultSchema: uses .strip() (default) because advanceWinnerInDb passes
-// extra fields (playerAId, playerBName, etc.) that need to reach Firestore.
-// Those extra fields are safe as they are set by the admin, not by users.
+// matchResultSchema: validates match result fields strictly.
+// Player advancement (playerAId, playerBName, etc.) is handled by a
+// dedicated updateMatchPlayers() service function, not through this schema.
 export const matchResultSchema = z.object({
   playerAScore: z.number().int().min(0).max(3),
   playerBScore: z.number().int().min(0).max(3),
@@ -40,7 +40,7 @@ export const matchResultSchema = z.object({
   status: z.enum(['scheduled', 'live', 'finished', 'completed', 'walkover']),
   scheduledTime: z.string().nullable().optional(),
   winnerId: z.string().nullable().optional(),
-});
+}).strict();
 
 export const treasuryFilterSchema = z.object({
   disciplineId: z.string().optional(),

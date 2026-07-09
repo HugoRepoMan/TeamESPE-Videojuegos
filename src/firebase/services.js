@@ -213,6 +213,34 @@ export async function updateMatchResult(matchId, data) {
 }
 
 /**
+ * Update player information on a match (used when advancing winners in brackets).
+ * This is separate from updateMatchResult because player advancement data
+ * has a different shape and should not be mixed with the match result schema.
+ * @param {string} matchId - The match document ID.
+ * @param {object} playerData - Object containing player fields to update
+ *   (e.g. { playerAId, playerAName } or { playerBId, playerBName }).
+ * @returns {Promise<void>}
+ */
+export async function updateMatchPlayers(matchId, playerData) {
+  const safeMatchId = sanitizeDocId(matchId);
+  // Only allow known player-related fields to be updated
+  const allowedKeys = ['playerAId', 'playerAName', 'playerBId', 'playerBName'];
+  const safeData = {};
+  for (const key of allowedKeys) {
+    if (key in playerData) {
+      safeData[key] = typeof playerData[key] === 'string'
+        ? sanitizeString(playerData[key], 100)
+        : playerData[key];
+    }
+  }
+  if (Object.keys(safeData).length === 0) return;
+  await updateDoc(doc(db, 'matches', safeMatchId), {
+    ...safeData,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+/**
  * Get all matches for a discipline.
  * @param {string} disciplineId - The discipline document ID.
  * @returns {Promise<object[]>}

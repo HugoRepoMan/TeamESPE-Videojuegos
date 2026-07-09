@@ -9,7 +9,7 @@ import SectionTitle from '../../components/ui/SectionTitle';
 import GameBadge from '../../components/ui/GameBadge';
 import { useCollection } from '../../hooks/useFirestore';
 import { where } from 'firebase/firestore';
-import { getApprovedRegistrations, createMatch, updateMatchResult, deleteMatchesByDiscipline } from '../../firebase/services';
+import { getApprovedRegistrations, createMatch, updateMatchResult, updateMatchPlayers, deleteMatchesByDiscipline } from '../../firebase/services';
 import { useAuth } from '../auth/useAuth';
 
 const DISCIPLINES = [
@@ -215,18 +215,9 @@ export default function BracketManager() {
          updateNextData.playerBName = winnerName;
       }
       
-      // We must pass all required matchResultSchema fields when using updateMatchResult
-      // or we can use the raw updateDoc, but let's stick to the service function.
-      // Wait, updateMatchResult validates against matchResultSchema which only has scores, status, winnerId.
-      // To update player names we might need a custom service function, or modify schema.
-      // Let's pass the new fields to updateMatchResult.
-      await updateMatchResult(nextMatch.id, {
-        playerAScore: nextMatch.playerAScore || 0,
-        playerBScore: nextMatch.playerBScore || 0,
-        status: nextMatch.status,
-        winnerId: nextMatch.winnerId || null,
-        ...updateNextData // Additional fields will be updated alongside the schema validation in the service
-      });
+      // Use the dedicated updateMatchPlayers service function
+      // which only allows known player fields and sanitizes them.
+      await updateMatchPlayers(nextMatch.id, updateNextData);
     }
   }
 

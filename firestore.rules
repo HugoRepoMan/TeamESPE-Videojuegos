@@ -1,12 +1,11 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+    // Admin access is determined EXCLUSIVELY by Firebase custom claims.
+    // Custom claims are set server-side via scripts/setAdminClaim.cjs.
+    // NEVER use email or Firestore document fields for admin authorization.
     function isAdmin() {
-      return request.auth != null && (
-        request.auth.token.admin == true || 
-        request.auth.token.email == 'admin@teamespe.com' ||
-        get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin'
-      );
+      return request.auth != null && request.auth.token.admin == true;
     }
 
     function isJuez() {
@@ -22,7 +21,10 @@ service cloud.firestore {
     // University IDs for uniqueness constraint
     match /universityIds/{universityId} {
       // Solo permite crear si el documento NO existe, asegurando que nadie más tome el ID.
-      allow create: if request.auth != null && !exists(/databases/$(database)/documents/universityIds/$(universityId));
+      // Se valida formato: entre 5 y 20 caracteres para prevenir spam/agotamiento.
+      allow create: if request.auth != null 
+        && !exists(/databases/$(database)/documents/universityIds/$(universityId))
+        && universityId.size() >= 5 && universityId.size() <= 20;
       allow read, update, delete: if isAdmin();
     }
 

@@ -1,8 +1,9 @@
 import { useState, useEffect } from 'react';
-import { doc, getDoc, updateDoc, collection, query, where, getCountFromServer } from 'firebase/firestore';
+import { doc, getDoc, collection, query, where, getCountFromServer } from 'firebase/firestore';
 import { Users, Gamepad2, CreditCard, Swords, Edit } from 'lucide-react';
 import { db } from '../../firebase/client';
 import { useAuth } from '../auth/useAuth';
+import { updateUserProfile } from '../../firebase/services';
 import { userProfileSchema } from '../../schemas';
 import HudCard from '../../components/ui/HudCard';
 import StatCard from '../../components/ui/StatCard';
@@ -109,13 +110,7 @@ export default function ParticipantDashboard() {
 
     setSaving(true);
     try {
-      const docRef = doc(db, 'users', user.uid);
-      await updateDoc(docRef, {
-        displayName: result.data.displayName,
-        nick: result.data.nick,
-        teamName: result.data.teamName,
-        updatedAt: new Date().toISOString(),
-      });
+      await updateUserProfile(user.uid, profileData);
       setSaveMessage('Perfil actualizado correctamente.');
       setShowProfileForm(false);
     } catch {
