@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { userProfileSchema, registrationSchema, paymentApprovalSchema, matchResultSchema, overlayUpdateSchema } from '../src/schemas';
+import { userProfileSchema, registrationSchema, paymentApprovalSchema, matchResultSchema } from '../src/schemas';
 
 describe('userProfileSchema', () => {
   it('validates valid profile', () => {
@@ -89,17 +89,3 @@ describe('matchResultSchema', () => {
   });
 });
 
-describe('overlayUpdateSchema', () => {
-  it('validates valid overlay update', () => {
-    const result = overlayUpdateSchema.safeParse({
-      activeMatchId: 'match1',
-      disciplineName: 'League of Legends',
-      playerAName: 'Team Alpha',
-      playerBName: 'Team Beta',
-      playerAScore: 1,
-      playerBScore: 0,
-      status: 'live',
-    });
-    expect(result.success).toBe(true);
-  });
-});

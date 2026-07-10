@@ -280,7 +280,7 @@ export default function LandingPage() {
           </div>
 
           {/* Stats bar */}
-          <div className="mt-20 pt-10 border-t border-hud-border grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="mt-20 pt-10 border-t border-hud-border grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
               <div className="text-3xl font-black text-hud-text">7</div>
               <div className="text-xs text-hud-text-secondary uppercase tracking-widest mt-1">Disciplinas</div>
@@ -290,12 +290,8 @@ export default function LandingPage() {
               <div className="text-xs text-hud-text-secondary uppercase tracking-widest mt-1">Inscripción</div>
             </div>
             <div>
-              <div className="text-3xl font-black text-hud-text">1 Día</div>
-              <div className="text-xs text-hud-text-secondary uppercase tracking-widest mt-1">De Competencia</div>
-            </div>
-            <div>
-              <div className="text-3xl font-black text-hud-text">Premios</div>
-              <div className="text-xs text-hud-text-secondary uppercase tracking-widest mt-1">En Efectivo</div>
+              <div className="text-3xl font-black text-hud-text">1</div>
+              <div className="text-xs text-hud-text-secondary uppercase tracking-widest mt-1">Día de Competencia</div>
             </div>
           </div>
         </div>

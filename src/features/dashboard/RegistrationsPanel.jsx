@@ -28,6 +28,7 @@ export default function RegistrationsPanel() {
   const [selectedDiscipline, setSelectedDiscipline] = useState('');
   const [playerNick, setPlayerNick] = useState('');
   const [teamName, setTeamName] = useState('');
+  const [teamMembers, setTeamMembers] = useState(['', '', '', '']);
   const [formErrors, setFormErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [showPaymentInfo, setShowPaymentInfo] = useState(false);
@@ -56,11 +57,13 @@ export default function RegistrationsPanel() {
       setSubmitMessage('');
 
       const discipline = DISCIPLINES.find((d) => d.id === selectedDiscipline);
+      const isLol = selectedDiscipline === 'league-of-legends';
 
       const formData = {
         disciplineId: selectedDiscipline,
         playerNick: playerNick.trim(),
         teamName: teamName.trim(),
+        ...(isLol && { teamMembers: teamMembers.map(m => m.trim()) })
       };
 
       const result = registrationSchema.safeParse(formData);
@@ -116,7 +119,7 @@ export default function RegistrationsPanel() {
       const docData = {
         ...result.data,
         userId: user.uid,
-        amount: COST_PER_DISCIPLINE,
+        amount: isLol ? 10.0 : COST_PER_DISCIPLINE,
         paymentStatus: 'pending',
         paymentReceiptUrl: receiptUrl,
         disciplineName: discipline?.name || selectedDiscipline,
@@ -129,6 +132,7 @@ export default function RegistrationsPanel() {
       setSelectedDiscipline('');
       setPlayerNick('');
       setTeamName('');
+      setTeamMembers(['', '', '', '']);
       setReceiptFile(null);
       setShowPaymentInfo(true);
       setSubmitMessage('Inscripcion registrada exitosamente.');
@@ -240,7 +244,7 @@ export default function RegistrationsPanel() {
           </div>
           <div>
             <label className="block text-sm text-gray-400 mb-1">
-              Nombre del Equipo (opcional)
+              {selectedDiscipline === 'league-of-legends' ? 'Nombre del Equipo *' : 'Nombre del Equipo (opcional)'}
             </label>
             <input
               type="text"
@@ -249,10 +253,35 @@ export default function RegistrationsPanel() {
               className="w-full bg-gray-800 border border-gray-700 text-gray-100 px-3 py-2 focus:outline-none focus:border-red-500 transition-colors"
               placeholder="Nombre del equipo"
             />
+            {formErrors.teamName && (
+              <p className="text-red-400 text-xs mt-1">{formErrors.teamName}</p>
+            )}
           </div>
+          {selectedDiscipline === 'league-of-legends' && (
+            <div className="space-y-3">
+              <label className="block text-sm text-gray-400 mb-1">Resto del Equipo (4 integrantes) *</label>
+              {teamMembers.map((member, index) => (
+                <input
+                  key={index}
+                  type="text"
+                  value={member}
+                  onChange={(e) => {
+                    const newMembers = [...teamMembers];
+                    newMembers[index] = e.target.value;
+                    setTeamMembers(newMembers);
+                  }}
+                  className="w-full bg-gray-800 border border-gray-700 text-gray-100 px-3 py-2 focus:outline-none focus:border-red-500 transition-colors"
+                  placeholder={`Integrante ${index + 1}`}
+                />
+              ))}
+              {formErrors.teamMembers && (
+                <p className="text-red-400 text-xs mt-1">{formErrors.teamMembers}</p>
+              )}
+            </div>
+          )}
           <div className="bg-gray-800/50 border border-gray-700 p-4 space-y-4 rounded-md">
             <p className="text-sm text-gray-300">
-              Costo por disciplina: <span className="text-red-400 font-bold">${COST_PER_DISCIPLINE.toFixed(2)}</span>
+              Costo por disciplina: <span className="text-red-400 font-bold">${(selectedDiscipline === 'league-of-legends' ? 10.0 : COST_PER_DISCIPLINE).toFixed(2)}</span>
             </p>
             <div className="flex flex-col sm:flex-row gap-6 items-start">
               <div className="flex-shrink-0 bg-white p-2 rounded w-40 h-40 flex items-center justify-center border border-dashed border-gray-500 text-center mx-auto sm:mx-0">

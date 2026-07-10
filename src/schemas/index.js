@@ -18,8 +18,26 @@ export const registrationSchema = z.object({
   disciplineId: z.string().min(1),
   playerNick: safeString(30),
   teamName: safeString(50).optional(),
+  teamMembers: z.array(safeString(30)).optional(),
   paymentReceiptUrl: z.string().url().optional(),
-}).strict();
+}).strict().superRefine((data, ctx) => {
+  if (data.disciplineId === 'league-of-legends') {
+    if (!data.teamName || data.teamName.trim() === '') {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'El nombre del equipo es obligatorio para League of Legends.',
+        path: ['teamName'],
+      });
+    }
+    if (!data.teamMembers || data.teamMembers.length !== 4 || data.teamMembers.some(m => !m || m.trim() === '')) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Debe incluir a los 4 integrantes del equipo.',
+        path: ['teamMembers'],
+      });
+    }
+  }
+});
 
 export const paymentApprovalSchema = z.object({
   registrationId: z.string().min(1),

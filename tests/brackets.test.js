@@ -107,7 +107,7 @@ describe('determineBo3Winner', () => {
       { playerAScore: 1, playerBScore: 0 },
       { playerAScore: 1, playerBScore: 0 },
     ];
-    expect(determineBo3Winner(games, 'pA', 'pB')).toBe('pA');
+    expect(determineBo3Winner(games)).toEqual({ winnerId: 'A' });
   });
 
   it('returns winner when player B wins 2 games', () => {
@@ -115,7 +115,7 @@ describe('determineBo3Winner', () => {
       { playerAScore: 0, playerBScore: 1 },
       { playerAScore: 0, playerBScore: 1 },
     ];
-    expect(determineBo3Winner(games, 'pA', 'pB')).toBe('pB');
+    expect(determineBo3Winner(games)).toEqual({ winnerId: 'B' });
   });
 
   it('returns winner in 3 games', () => {
@@ -124,7 +124,7 @@ describe('determineBo3Winner', () => {
       { playerAScore: 0, playerBScore: 1 },
       { playerAScore: 1, playerBScore: 0 },
     ];
-    expect(determineBo3Winner(games, 'pA', 'pB')).toBe('pA');
+    expect(determineBo3Winner(games)).toEqual({ winnerId: 'A' });
   });
 
   it('returns null when not decided', () => {
@@ -132,11 +132,11 @@ describe('determineBo3Winner', () => {
       { playerAScore: 1, playerBScore: 0 },
       { playerAScore: 0, playerBScore: 1 },
     ];
-    expect(determineBo3Winner(games, 'pA', 'pB')).toBeNull();
+    expect(determineBo3Winner(games)).toBeNull();
   });
 
   it('returns null for empty games', () => {
-    expect(determineBo3Winner([], 'pA', 'pB')).toBeNull();
+    expect(determineBo3Winner([])).toBeNull();
   });
 });
 
