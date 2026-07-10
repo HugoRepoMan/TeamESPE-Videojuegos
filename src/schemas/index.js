@@ -1,8 +1,9 @@
 import { z } from 'zod';
-import { sanitizeString } from '../lib/sanitize';
 
-const safeString = (maxLen = 100) =>
-  z.string().max(maxLen).transform(sanitizeString);
+const safeString = (max) => z.string()
+  .max(max, `Máximo ${max} caracteres`)
+  .transform(val => val.replace(/<[^>]*>?/gm, ''))
+  .transform(val => val.replace(/\s+/g, ' ').trim());
 
 // userProfileSchema: only allow known profile fields.
 // .strict() ensures extra unknown fields (e.g. roleVisible, uid) are rejected.
@@ -19,7 +20,9 @@ export const registrationSchema = z.object({
   playerNick: safeString(30),
   teamName: safeString(50).optional(),
   teamMembers: z.array(safeString(30)).optional(),
-  paymentReceiptUrl: z.string().url().optional(),
+  paymentReceiptUrl: z.string().url().refine(val => val.startsWith('https://'), {
+    message: "La URL debe ser segura (https://)",
+  }).optional(),
 }).strict().superRefine((data, ctx) => {
   if (data.disciplineId === 'league-of-legends') {
     if (!data.teamName || data.teamName.trim() === '') {

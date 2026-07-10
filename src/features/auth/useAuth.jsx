@@ -16,21 +16,21 @@ export function AuthProvider({ children }) {
       if (firebaseUser) {
         const tokenResult = await firebaseUser.getIdTokenResult();
         // Admin access is granted EXCLUSIVELY via Firebase custom claims (set server-side).
-        const isAdminUser = !!tokenResult.claims.admin || firebaseUser.email === 'admin@teamespe.com' || userRole === 'admin';
+        const isAdminUser = !!tokenResult.claims.admin;
         
         // Cargar rol desde el documento del usuario
-        let userRoleFetched = 'player';
+        let userRole = 'player';
         try {
           const userDoc = await getDoc(doc(db, 'users', firebaseUser.uid));
           if (userDoc.exists()) {
-            userRoleFetched = userDoc.data().role || 'player';
+            userRole = userDoc.data().role || 'player';
           }
         } catch (e) {
           console.error("Error loading user role", e);
         }
 
-        setIsAdmin(!!tokenResult.claims.admin || firebaseUser.email === 'admin@teamespe.com' || userRoleFetched === 'admin');
-        setIsJuez(userRoleFetched === 'juez');
+        setIsAdmin(isAdminUser);
+        setIsJuez(userRole === 'juez');
         setUser(firebaseUser);
       } else {
         setUser(null);

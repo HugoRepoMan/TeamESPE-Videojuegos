@@ -5,7 +5,7 @@ service cloud.firestore {
     // Custom claims are set server-side via scripts/setAdminClaim.cjs.
     // NEVER use email or Firestore document fields for admin authorization.
     function isAdmin() {
-      return request.auth != null && (request.auth.token.admin == true || request.auth.token.email == 'admin@teamespe.com' || get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin');
+      return request.auth != null && request.auth.token.admin == true;
     }
 
     function isJuez() {
@@ -62,18 +62,15 @@ service cloud.firestore {
 
       // Users can create registrations under their own ID with enforced constraints.
       // The document ID must follow the pattern {userId}_{disciplineId} to guarantee uniqueness per user per discipline.
-      allow create: if request.auth != null && (
-        (
-          request.resource.data.userId == request.auth.uid
-          && registrationId.matches(request.auth.uid + '_.*')
-          && request.resource.data.paymentStatus == 'pending'
-          && (
-            (request.resource.data.disciplineId == 'league-of-legends' && request.resource.data.amount == 10) ||
-            (request.resource.data.disciplineId != 'league-of-legends' && request.resource.data.amount == 2)
-          )
-          && request.resource.data.keys().hasAll(['userId', 'disciplineId', 'playerNick', 'paymentStatus', 'amount'])
-        ) || isAdmin()
-      );
+      allow create: if request.auth != null
+        && request.resource.data.userId == request.auth.uid
+        && registrationId.matches(request.auth.uid + '_.*')
+        && request.resource.data.paymentStatus == 'pending'
+        && (
+          (request.resource.data.disciplineId == 'league-of-legends' && request.resource.data.amount == 10) ||
+          (request.resource.data.disciplineId != 'league-of-legends' && request.resource.data.amount == 2)
+        )
+        && request.resource.data.keys().hasAll(['userId', 'disciplineId', 'playerNick', 'paymentStatus', 'amount']);
 
       // Users cannot overwrite an already-reviewed registration (approved/rejected).
       // This prevents re-submitting after a payment decision has been made.

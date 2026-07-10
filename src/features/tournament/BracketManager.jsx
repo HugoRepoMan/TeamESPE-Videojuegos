@@ -8,8 +8,7 @@ import StatusBadge from '../../components/ui/StatusBadge';
 import SectionTitle from '../../components/ui/SectionTitle';
 import GameBadge from '../../components/ui/GameBadge';
 import { useCollection } from '../../hooks/useFirestore';
-import { where, writeBatch, doc, serverTimestamp } from 'firebase/firestore';
-import { db } from '../../firebase/client';
+import { where } from 'firebase/firestore';
 import { getApprovedRegistrations, createMatch, updateMatchResult, updateMatchPlayers, deleteMatchesByDiscipline } from '../../firebase/services';
 import { useAuth } from '../auth/useAuth';
 
@@ -51,47 +50,6 @@ export default function BracketManager() {
     if (a.round !== b.round) return a.round - b.round;
     return a.bracketPosition - b.bracketPosition;
   });
-
-  const handleSeedData = async () => {
-    if (!selectedDiscipline) {
-      setMessage('Error: Seleccione una disciplina primero para generar datos semilla.');
-      return;
-    }
-    setIsGenerating(true);
-    setMessage('Generando 20 jugadores de prueba...');
-    
-    try {
-      const batch = writeBatch(db);
-      const isLol = selectedDiscipline === 'league-of-legends';
-      
-      for (let i = 1; i <= 20; i++) {
-        const dummyUserId = `seed_${Math.random().toString(36).substr(2, 9)}`;
-        const registrationDocId = `${dummyUserId}_${selectedDiscipline}`;
-        const docRef = doc(db, 'registrations', registrationDocId);
-        
-        batch.set(docRef, {
-          userId: dummyUserId,
-          disciplineId: selectedDiscipline,
-          playerNick: `Jugador_Test_${i}`,
-          teamName: isLol ? `Equipo Prueba ${i}` : '',
-          teamMembers: isLol ? [`Miembro A${i}`, `Miembro B${i}`, `Miembro C${i}`, `Miembro D${i}`] : [],
-          paymentStatus: 'approved',
-          amount: isLol ? 10 : 2,
-          disciplineName: DISCIPLINES.find(d => d.id === selectedDiscipline)?.name || selectedDiscipline,
-          playerName: `Usuario Prueba ${i}`,
-          createdAt: serverTimestamp(),
-        });
-      }
-      
-      await batch.commit();
-      setMessage(`Se han generado 20 jugadores de prueba para la disciplina seleccionada. Ahora puedes generar el bracket.`);
-    } catch (error) {
-      console.error(error);
-      setMessage('Error al generar datos de prueba.');
-    } finally {
-      setIsGenerating(false);
-    }
-  };
 
   async function handleGenerate() {
     if (!selectedDiscipline) {
@@ -378,20 +336,12 @@ export default function BracketManager() {
               </select>
               
               {isAdmin && (
-                <div className="flex gap-2">
-                  <DiagonalButton
-                    onClick={handleGenerate}
-                    disabled={!selectedDiscipline || isGenerating}
-                  >
-                    {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Generar Brackets'}
-                  </DiagonalButton>
-                  <DiagonalButton
-                    onClick={handleSeedData}
-                    disabled={!selectedDiscipline || isGenerating}
-                  >
-                    Generar 20 Jugadores (Prueba)
-                  </DiagonalButton>
-                </div>
+                <DiagonalButton
+                  onClick={handleGenerate}
+                  disabled={!selectedDiscipline || isGenerating}
+                >
+                  {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Generar Brackets'}
+                </DiagonalButton>
               )}
             </div>
           )}
