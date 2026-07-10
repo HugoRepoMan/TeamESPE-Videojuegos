@@ -62,15 +62,18 @@ service cloud.firestore {
 
       // Users can create registrations under their own ID with enforced constraints.
       // The document ID must follow the pattern {userId}_{disciplineId} to guarantee uniqueness per user per discipline.
-      allow create: if request.auth != null
-        && request.resource.data.userId == request.auth.uid
-        && registrationId.matches(request.auth.uid + '_.*')
-        && request.resource.data.paymentStatus == 'pending'
-        && (
-          (request.resource.data.disciplineId == 'league-of-legends' && request.resource.data.amount == 10) ||
-          (request.resource.data.disciplineId != 'league-of-legends' && request.resource.data.amount == 2)
-        )
-        && request.resource.data.keys().hasAll(['userId', 'disciplineId', 'playerNick', 'paymentStatus', 'amount']);
+      allow create: if request.auth != null && (
+        (
+          request.resource.data.userId == request.auth.uid
+          && registrationId.matches(request.auth.uid + '_.*')
+          && request.resource.data.paymentStatus == 'pending'
+          && (
+            (request.resource.data.disciplineId == 'league-of-legends' && request.resource.data.amount == 10) ||
+            (request.resource.data.disciplineId != 'league-of-legends' && request.resource.data.amount == 2)
+          )
+          && request.resource.data.keys().hasAll(['userId', 'disciplineId', 'playerNick', 'paymentStatus', 'amount'])
+        ) || isAdmin()
+      );
 
       // Users cannot overwrite an already-reviewed registration (approved/rejected).
       // This prevents re-submitting after a payment decision has been made.

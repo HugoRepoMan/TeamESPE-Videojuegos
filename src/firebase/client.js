@@ -32,6 +32,9 @@ if (typeof window !== 'undefined') {
       'App Check está deshabilitado. Configura la clave para producción.'
     );
   } else {
+    if (import.meta.env.DEV) {
+      self.FIREBASE_APPCHECK_DEBUG_TOKEN = true;
+    }
     appCheck = initializeAppCheck(app, {
       provider: new ReCaptchaV3Provider(reCaptchaKey),
       isTokenAutoRefreshEnabled: true,
