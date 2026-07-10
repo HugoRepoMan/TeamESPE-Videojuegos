@@ -228,8 +228,17 @@ export default function LandingPage() {
           
           {/* Top Badge */}
           <div className="inline-flex items-center gap-2 bg-hud-surface/50 border border-hud-accent/30 px-4 py-2 mb-8 backdrop-blur-sm shadow-[0_0_10px_rgba(227,0,43,0.2)]">
-            <span className="w-2 h-2 bg-hud-accent rounded-full animate-pulse" />
-            <span className="text-hud-accent font-bold text-xs uppercase tracking-[0.2em]">Inscripciones Abiertas</span>
+            {new Date() > new Date('2026-07-16T12:00:00-05:00') ? (
+              <>
+                <span className="w-2 h-2 bg-gray-500 rounded-full" />
+                <span className="text-gray-400 font-bold text-xs uppercase tracking-[0.2em]">Inscripciones Cerradas</span>
+              </>
+            ) : (
+              <>
+                <span className="w-2 h-2 bg-hud-accent rounded-full animate-pulse" />
+                <span className="text-hud-accent font-bold text-xs uppercase tracking-[0.2em]">Abiertas hasta el 16 de Julio (12:00 PM)</span>
+              </>
+            )}
           </div>
 
           {/* Main Title */}

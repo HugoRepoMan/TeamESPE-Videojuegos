@@ -24,6 +24,10 @@ const COST_PER_DISCIPLINE = 2.0;
 
 export default function RegistrationsPanel() {
   const { user } = useAuth();
+  
+  const deadline = new Date('2026-07-16T12:00:00-05:00');
+  const isClosed = new Date() > deadline;
+
   const [registrations, setRegistrations] = useState([]);
   const [selectedDiscipline, setSelectedDiscipline] = useState('');
   const [playerNick, setPlayerNick] = useState('');
@@ -190,7 +194,24 @@ export default function RegistrationsPanel() {
         )}
       </HudCard>
 
+      {/* Registration Deadline Notice */}
+      <div className={`p-4 border flex items-start gap-3 ${isClosed ? 'bg-red-950/50 border-red-500/30' : 'bg-yellow-950/30 border-yellow-500/30'}`}>
+        <Info className={`w-6 h-6 mt-1 shrink-0 ${isClosed ? 'text-red-400' : 'text-yellow-500'}`} />
+        <div>
+          <h3 className={`font-semibold ${isClosed ? 'text-red-400' : 'text-yellow-500'}`}>
+            {isClosed ? 'Inscripciones Cerradas' : 'Cierre de inscripciones'}
+          </h3>
+          <p className="text-gray-300 mt-1 text-sm leading-relaxed">
+            {isClosed 
+              ? 'El plazo para inscribirse ha finalizado el 16 de Julio de 2026 al medio día (12:00 PM).'
+              : 'Las inscripciones solo se podrán realizar hasta el 16 de Julio de 2026 a las 12:00 PM (Medio Día).'
+            }
+          </p>
+        </div>
+      </div>
+
       {/* New Registration Form */}
+      {!isClosed && (
       <HudCard className="mb-8">
         <h3 className="text-lg font-semibold text-gray-200 mb-4 flex items-center gap-2">
           <CreditCard className="w-5 h-5 text-red-500" />
@@ -321,6 +342,7 @@ export default function RegistrationsPanel() {
           </DiagonalButton>
         </form>
       </HudCard>
+      )}
 
       {/* Payment Instructions */}
       {showPaymentInfo && (
