@@ -13,7 +13,7 @@ import SectionTitle from '../../components/ui/SectionTitle';
 const DISCIPLINES = [
   { id: 'clash-royale', name: 'Clash Royale', mode: '1v1', active: true },
   { id: 'fortnite', name: 'Fortnite', mode: 'Solo', active: true },
-  { id: 'minecraft', name: 'Minecraft', mode: 'Equipo', active: true },
+  { id: 'minecraft', name: 'Minecraft', mode: '1v1', active: true },
   { id: 'league-of-legends', name: 'League of Legends', mode: '5v5', active: true },
   { id: 'dragon-ball', name: 'Dragon Ball Sparking Zero', mode: '1v1', active: true },
   { id: 'fifa-26', name: 'FIFA 26', mode: '1v1', active: true },
