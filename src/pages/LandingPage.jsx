@@ -19,13 +19,25 @@ const DISCIPLINES = [
 
 const SCHEDULE = [
   { 
-    day: 'Laboratorio 1', 
-    date: '17 Jul 2026 • Horarios por confirmar', 
+    day: 'Fase Eliminatoria - Lab 1', 
+    date: '16 Jul 2026 • 14:00 (2 PM)', 
     events: [
-      'Gran Final League of Legends',
-      'Clasificatorias League of Legends',
-      'Torneo de Minecraft',
-      'Torneo Clash Royale',
+      'League of Legends',
+      'Minecraft',
+      'Clash Royale',
+      'Fortnite',
+      'Dragon Ball Sparking Zero',
+      'FIFA 26',
+      'Mortal Kombat'
+    ] 
+  },
+  { 
+    day: 'Finales - Lab 1', 
+    date: '17 Jul 2026 • 14:00 (2 PM)', 
+    events: [
+      'League of Legends',
+      'Minecraft',
+      'Clash Royale',
       'Fortnite',
       'Dragon Ball Sparking Zero',
       'FIFA 26',
@@ -251,7 +263,7 @@ export default function LandingPage() {
 
           {/* Subtitle */}
           <p className="text-lg sm:text-xl text-hud-text-secondary max-w-2xl mx-auto mb-8 leading-relaxed">
-            Un solo día. 7 disciplinas. Un campeón por videojuego.
+            Dos días. 7 disciplinas. Un campeón por videojuego.
             El torneo interuniversitario más grande de Santo Domingo.
           </p>
 
@@ -299,8 +311,8 @@ export default function LandingPage() {
               <div className="text-xs text-hud-text-secondary uppercase tracking-widest mt-1">Inscripción</div>
             </div>
             <div>
-              <div className="text-3xl font-black text-hud-text">1</div>
-              <div className="text-xs text-hud-text-secondary uppercase tracking-widest mt-1">Día de Competencia</div>
+              <div className="text-3xl font-black text-hud-text">2</div>
+              <div className="text-xs text-hud-text-secondary uppercase tracking-widest mt-1">Días de Competencia</div>
             </div>
           </div>
         </div>
@@ -378,7 +390,7 @@ export default function LandingPage() {
           <div className="text-center mb-16">
             <SectionTitle className="justify-center">Cronograma General</SectionTitle>
             <p className="text-hud-text-secondary mt-4 max-w-xl mx-auto">
-              Todas las competencias se llevarán a cabo de manera simultánea el 17 de Julio en el Campus Santo Domingo.
+              Las competencias se dividirán en fase eliminatoria y finales, llevándose a cabo los días 16 y 17 de Julio en el Campus Santo Domingo.
             </p>
           </div>
 
