@@ -33,6 +33,7 @@ export default function RegistrationsPanel() {
   const [playerNick, setPlayerNick] = useState('');
   const [teamName, setTeamName] = useState('');
   const [teamMembers, setTeamMembers] = useState(['', '', '', '']);
+  const [lolRegistrationType, setLolRegistrationType] = useState('team');
   const [formErrors, setFormErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
   const [showPaymentInfo, setShowPaymentInfo] = useState(false);
@@ -62,12 +63,14 @@ export default function RegistrationsPanel() {
 
       const discipline = DISCIPLINES.find((d) => d.id === selectedDiscipline);
       const isLol = selectedDiscipline === 'league-of-legends';
+      const isLolFullTeam = isLol && lolRegistrationType === 'team';
 
       const formData = {
         disciplineId: selectedDiscipline,
         playerNick: playerNick.trim(),
         teamName: teamName.trim(),
-        ...(isLol && { teamMembers: teamMembers.map(m => m.trim()) })
+        ...(isLol && { lolRegistrationType }),
+        ...(isLolFullTeam && { teamMembers: teamMembers.map(m => m.trim()) })
       };
 
       const result = registrationSchema.safeParse(formData);
@@ -123,7 +126,7 @@ export default function RegistrationsPanel() {
       const docData = {
         ...result.data,
         userId: user.uid,
-        amount: isLol ? 10.0 : COST_PER_DISCIPLINE,
+        amount: isLolFullTeam ? 10.0 : COST_PER_DISCIPLINE,
         paymentStatus: 'pending',
         paymentReceiptUrl: receiptUrl,
         disciplineName: discipline?.name || selectedDiscipline,
@@ -263,22 +266,61 @@ export default function RegistrationsPanel() {
               <p className="text-red-400 text-xs mt-1">{formErrors.playerNick}</p>
             )}
           </div>
-          <div>
-            <label className="block text-sm text-gray-400 mb-1">
-              {selectedDiscipline === 'league-of-legends' ? 'Nombre del Equipo *' : 'Nombre del Equipo (opcional)'}
-            </label>
-            <input
-              type="text"
-              value={teamName}
-              onChange={(e) => setTeamName(e.target.value)}
-              className="w-full bg-gray-800 border border-gray-700 text-gray-100 px-3 py-2 focus:outline-none focus:border-red-500 transition-colors"
-              placeholder="Nombre del equipo"
-            />
-            {formErrors.teamName && (
-              <p className="text-red-400 text-xs mt-1">{formErrors.teamName}</p>
-            )}
-          </div>
           {selectedDiscipline === 'league-of-legends' && (
+            <div className="bg-yellow-500/10 border border-yellow-500/30 p-3 rounded mb-4">
+              <p className="text-yellow-500 text-sm font-semibold flex items-center gap-2">
+                <Info size={16} />
+                Información para League of Legends (Servidor LAN)
+              </p>
+              <ul className="text-gray-300 text-xs mt-2 space-y-1 list-disc list-inside">
+                <li>Puedes inscribirte con tu equipo completo o individualmente.</li>
+                <li>Si te inscribes individualmente, serás sorteado para formar equipo con otros participantes.</li>
+              </ul>
+              
+              <div className="mt-3 flex flex-col gap-2">
+                <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="lolRegistrationType"
+                    value="team"
+                    checked={lolRegistrationType === 'team'}
+                    onChange={() => setLolRegistrationType('team')}
+                    className="text-red-500 focus:ring-red-500"
+                  />
+                  Inscripción por Equipo Completo ($10.00)
+                </label>
+                <label className="flex items-center gap-2 text-sm text-gray-300 cursor-pointer">
+                  <input
+                    type="radio"
+                    name="lolRegistrationType"
+                    value="individual"
+                    checked={lolRegistrationType === 'individual'}
+                    onChange={() => setLolRegistrationType('individual')}
+                    className="text-red-500 focus:ring-red-500"
+                  />
+                  Inscripción Individual - Sorteo ($2.00)
+                </label>
+              </div>
+            </div>
+          )}
+          {!(selectedDiscipline === 'league-of-legends' && lolRegistrationType === 'individual') && (
+            <div>
+              <label className="block text-sm text-gray-400 mb-1">
+                {selectedDiscipline === 'league-of-legends' ? 'Nombre del Equipo *' : 'Nombre del Equipo (opcional)'}
+              </label>
+              <input
+                type="text"
+                value={teamName}
+                onChange={(e) => setTeamName(e.target.value)}
+                className="w-full bg-gray-800 border border-gray-700 text-gray-100 px-3 py-2 focus:outline-none focus:border-red-500 transition-colors"
+                placeholder="Nombre del equipo"
+              />
+              {formErrors.teamName && (
+                <p className="text-red-400 text-xs mt-1">{formErrors.teamName}</p>
+              )}
+            </div>
+          )}
+          {selectedDiscipline === 'league-of-legends' && lolRegistrationType === 'team' && (
             <div className="space-y-3">
               <label className="block text-sm text-gray-400 mb-1">Resto del Equipo (4 integrantes) *</label>
               {teamMembers.map((member, index) => (
@@ -302,7 +344,7 @@ export default function RegistrationsPanel() {
           )}
           <div className="bg-gray-800/50 border border-gray-700 p-4 space-y-4 rounded-md">
             <p className="text-sm text-gray-300">
-              Costo por disciplina: <span className="text-red-400 font-bold">${(selectedDiscipline === 'league-of-legends' ? 10.0 : COST_PER_DISCIPLINE).toFixed(2)}</span>
+              Costo por disciplina: <span className="text-red-400 font-bold">${(selectedDiscipline === 'league-of-legends' && lolRegistrationType === 'team' ? 10.0 : COST_PER_DISCIPLINE).toFixed(2)}</span>
             </p>
             <div className="flex flex-col sm:flex-row gap-6 items-start">
               <div className="flex-shrink-0 bg-white p-2 rounded w-40 h-40 flex items-center justify-center border border-dashed border-gray-500 text-center mx-auto sm:mx-0">

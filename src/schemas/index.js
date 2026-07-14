@@ -20,11 +20,12 @@ export const registrationSchema = z.object({
   playerNick: safeString(30),
   teamName: safeString(50).optional(),
   teamMembers: z.array(safeString(30)).optional(),
+  lolRegistrationType: z.enum(['team', 'individual']).optional(),
   paymentReceiptUrl: z.string().url().refine(val => val.startsWith('https://'), {
     message: "La URL debe ser segura (https://)",
   }).optional(),
 }).strict().superRefine((data, ctx) => {
-  if (data.disciplineId === 'league-of-legends') {
+  if (data.disciplineId === 'league-of-legends' && data.lolRegistrationType !== 'individual') {
     if (!data.teamName || data.teamName.trim() === '') {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
