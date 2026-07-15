@@ -9,6 +9,12 @@ import SectionTitle from '../../components/ui/SectionTitle';
 
 const NAV_CARDS = [
   {
+    icon: Users,
+    title: 'Gestión de Roles',
+    description: 'Asignar roles de administrador, juez o jugador a los usuarios registrados.',
+    href: '/admin/roles',
+  },
+  {
     icon: CreditCard,
     title: 'Gestion de Pagos',
     description: 'Aprobar o rechazar pagos de inscripcion de los participantes.',

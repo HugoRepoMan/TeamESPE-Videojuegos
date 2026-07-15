@@ -322,8 +322,8 @@ export default function BracketManager() {
       {/* Controls */}
       <HudCard className="mb-6">
         <div className="flex flex-wrap items-end gap-4">
-          {matches.length === 0 && !isSelectingTop8 && (
-            <div className="flex gap-4 items-center">
+          {!isSelectingTop8 && (
+            <div className="flex gap-4 items-center flex-wrap">
               <select
                 value={selectedDiscipline}
                 onChange={(e) => setSelectedDiscipline(e.target.value)}
@@ -335,7 +335,7 @@ export default function BracketManager() {
                 ))}
               </select>
               
-              {isAdmin && (
+              {isAdmin && matches.length === 0 && (
                 <DiagonalButton
                   onClick={handleGenerate}
                   disabled={!selectedDiscipline || isGenerating}

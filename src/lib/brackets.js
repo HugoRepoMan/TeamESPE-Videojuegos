@@ -64,10 +64,13 @@ export function generateBracket(players) {
   const totalRounds = Math.log2(size);
 
   // Pad with BYE slots
-  const seeded = [...shuffled];
-  while (seeded.length < size) {
-    seeded.push(null); // null represents a BYE
+  const padded = [...shuffled];
+  while (padded.length < size) {
+    padded.push(null); // null represents a BYE
   }
+  
+  // Shuffle again to randomly distribute BYEs
+  const seeded = shuffleArray(padded);
 
   const matches = [];
   let matchIndex = 0;

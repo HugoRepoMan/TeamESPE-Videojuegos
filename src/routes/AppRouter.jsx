@@ -14,6 +14,7 @@ import RegistrationsPanel from '../features/dashboard/RegistrationsPanel';
 import MatchesPanel from '../features/dashboard/MatchesPanel';
 import AdminDashboard from '../features/admin/AdminDashboard';
 import PaymentsManager from '../features/admin/PaymentsManager';
+import UserRolesManager from '../features/admin/UserRolesManager';
 import BracketManager from '../features/tournament/BracketManager';
 import TreasuryPanel from '../features/treasury/TreasuryPanel';
 import BracketsPage from '../pages/BracketsPage';
@@ -54,6 +55,10 @@ const router = createBrowserRouter([
   {
     path: '/admin/payments',
     element: <AdminRoute><PageShell title="Gestión de Pagos" showBack><PaymentsManager /></PageShell></AdminRoute>
+  },
+  {
+    path: '/admin/roles',
+    element: <AdminRoute><PageShell title="Gestión de Roles" showBack><UserRolesManager /></PageShell></AdminRoute>
   },
   {
     path: '/admin/brackets',

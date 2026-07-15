@@ -44,8 +44,8 @@ service cloud.firestore {
         && (!('role' in request.resource.data) || request.resource.data.role == 'player');
       allow update: if request.auth != null && request.auth.uid == uid
         && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['uid', 'email', 'roleVisible', 'role', 'createdAt']);
-      // Admin can read all users
-      allow read: if isAdmin();
+      // Admin can read and update all users
+      allow read, update: if isAdmin();
     }
 
     // Disciplines - public read, admin write
