@@ -349,8 +349,8 @@ export default function LandingPage() {
                     <DollarSign size={16} />
                     <span className="font-bold">2.00 USD</span>
                   </div>
-                  <Link to="/register" className="text-hud-text-secondary hover:text-hud-text font-bold uppercase tracking-wider transition-colors flex items-center gap-1">
-                    Inscribirse <ChevronRight size={14} />
+                  <Link to={user ? (isAdmin ? "/admin" : isJuez ? "/juez" : "/dashboard") : "/register"} className="text-hud-text-secondary hover:text-hud-text font-bold uppercase tracking-wider transition-colors flex items-center gap-1">
+                    {user ? 'Ir al Panel' : 'Inscribirse'} <ChevronRight size={14} />
                   </Link>
                 </div>
               </HudCard>
@@ -368,7 +368,7 @@ export default function LandingPage() {
                 Asegura tu lugar en el torneo. Los cupos son limitados y se asignan por orden de registro y pago validado.
               </p>
               {user ? (
-                <Link to={isAdmin ? "/admin" : "/dashboard"}>
+                <Link to={isAdmin ? "/admin" : isJuez ? "/juez" : "/dashboard"}>
                   <DiagonalButton>Ir al Panel</DiagonalButton>
                 </Link>
               ) : (
