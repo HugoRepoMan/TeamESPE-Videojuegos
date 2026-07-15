@@ -67,7 +67,7 @@ service cloud.firestore {
         && registrationId.matches(request.auth.uid + '_.*')
         && request.resource.data.paymentStatus == 'pending'
         && (
-          (request.resource.data.disciplineId == 'league-of-legends' && request.resource.data.amount == 10) ||
+          (request.resource.data.disciplineId == 'league-of-legends' && (request.resource.data.amount == 10 || request.resource.data.amount == 2)) ||
           (request.resource.data.disciplineId != 'league-of-legends' && request.resource.data.amount == 2)
         )
         && request.resource.data.keys().hasAll(['userId', 'disciplineId', 'playerNick', 'paymentStatus', 'amount']);

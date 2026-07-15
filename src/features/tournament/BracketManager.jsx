@@ -91,7 +91,7 @@ export default function BracketManager() {
       const players = registrations.map(reg => ({
         id: reg.userId, // Using userId as the player ID for the bracket logic
         nick: reg.playerNick,
-        name: reg.teamName || reg.playerNick
+        name: reg.teamName ? `${reg.playerNick} (${reg.teamName})` : reg.playerNick
       }));
 
       const generatedMatches = generateBracket(players);
@@ -137,7 +137,7 @@ export default function BracketManager() {
       const players = selectedRegistrations.map(reg => ({
         id: reg.userId,
         nick: reg.playerNick,
-        name: reg.teamName || reg.playerNick
+        name: reg.teamName ? `${reg.playerNick} (${reg.teamName})` : reg.playerNick
       }));
 
       // generateBracket handles shuffling and seeding
