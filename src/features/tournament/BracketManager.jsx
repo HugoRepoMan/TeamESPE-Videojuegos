@@ -36,11 +36,6 @@ export default function BracketManager() {
     game3A: 0, game3B: 0,
   });
 
-  // Top 8 Selection State
-  const [isSelectingTop8, setIsSelectingTop8] = useState(false);
-  const [clashRoyaleCandidates, setClashRoyaleCandidates] = useState([]);
-  const [selectedTop8, setSelectedTop8] = useState([]);
-
   // Real-time listener for matches of the selected discipline
   const { data: dbMatches, loading } = useCollection('matches', [
     where('disciplineId', '==', selectedDiscipline)
@@ -265,7 +260,6 @@ export default function BracketManager() {
       {/* Controls */}
       <HudCard className="mb-6">
         <div className="flex flex-wrap items-end gap-4">
-          {!isSelectingTop8 && (
             <div className="flex gap-4 items-center flex-wrap">
               <select
                 value={selectedDiscipline}
