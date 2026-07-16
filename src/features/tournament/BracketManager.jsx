@@ -67,18 +67,7 @@ export default function BracketManager() {
       setMessage('Generando brackets...');
       const registrations = await getApprovedRegistrations(selectedDiscipline);
 
-      if (selectedDiscipline === 'clash-royale') {
-        if (registrations.length < 8) {
-          setMessage('Error: Se requieren al menos 8 inscritos aprobados para generar la llave del Top 8 en Clash Royale.');
-          setIsGenerating(false);
-          return;
-        }
-        setClashRoyaleCandidates(registrations);
-        setIsSelectingTop8(true);
-        setIsGenerating(false);
-        setMessage('Selecciona a los 8 mejores jugadores del Todos contra Todos.');
-        return;
-      }
+
 
       if (registrations.length < 2) {
         setMessage('Error: Se requieren al menos 2 inscritos aprobados para generar llaves.');
@@ -123,53 +112,7 @@ export default function BracketManager() {
     }
   }
 
-  async function handleGenerateClashRoyale() {
-    if (selectedTop8.length !== 8) {
-      setMessage(`Debes seleccionar exactamente 8 jugadores (actualmente tienes ${selectedTop8.length}).`);
-      return;
-    }
 
-    try {
-      setIsGenerating(true);
-      setMessage('Generando llaves de Clash Royale (Top 8)...');
-      
-      const selectedRegistrations = clashRoyaleCandidates.filter(reg => selectedTop8.includes(reg.userId));
-      const players = selectedRegistrations.map(reg => ({
-        id: reg.userId,
-        nick: reg.playerNick,
-        name: reg.teamName ? `${reg.playerNick} (${reg.teamName})` : reg.playerNick
-      }));
-
-      // generateBracket handles shuffling and seeding
-      const generatedMatches = generateBracket(players);
-
-      for (const m of generatedMatches) {
-        await createMatch({
-          disciplineId: selectedDiscipline,
-          matchIndex: m.matchIndex,
-          round: m.round,
-          bracketPosition: m.bracketPosition,
-          playerAId: m.playerA?.id || null,
-          playerAName: m.playerA?.name || null,
-          playerBId: m.playerB?.id || null,
-          playerBName: m.playerB?.name || null,
-          playerAScore: 0,
-          playerBScore: 0,
-          status: m.status || 'scheduled',
-          winnerId: m.winnerId || null,
-        });
-      }
-
-      setMessage('Bracket del Top 8 generado exitosamente.');
-      setIsSelectingTop8(false);
-      setSelectedTop8([]);
-    } catch (err) {
-      console.error(err);
-      setMessage('Error al generar el bracket.');
-    } finally {
-      setIsGenerating(false);
-    }
-  }
 
   async function handleDeleteMatches() {
     if (!selectedDiscipline) return;
@@ -344,60 +287,6 @@ export default function BracketManager() {
                 </DiagonalButton>
               )}
             </div>
-          )}
-
-          {isSelectingTop8 && (
-            <div className="space-y-4">
-              <h3 className="text-lg font-bold text-gray-100 border-b border-gray-800 pb-2">Selección del Top 8 (Clash Royale)</h3>
-              <p className="text-sm text-gray-400">Selecciona los 8 jugadores que pasaron la fase de "Todos contra Todos". Has seleccionado: <span className="text-red-400 font-bold">{selectedTop8.length}/8</span></p>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 max-h-96 overflow-y-auto pr-2">
-                {clashRoyaleCandidates.map(reg => (
-                  <label key={reg.userId} className={`flex items-center gap-3 p-3 border cursor-pointer transition-colors ${selectedTop8.includes(reg.userId) ? 'border-red-500 bg-red-500/10' : 'border-gray-800 bg-gray-900/50 hover:bg-gray-800'}`}>
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 accent-red-500"
-                      checked={selectedTop8.includes(reg.userId)}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          if (selectedTop8.length >= 8) {
-                            alert('Ya has seleccionado 8 jugadores.');
-                            return;
-                          }
-                          setSelectedTop8(prev => [...prev, reg.userId]);
-                        } else {
-                          setSelectedTop8(prev => prev.filter(id => id !== reg.userId));
-                        }
-                      }}
-                    />
-                    <div>
-                      <div className="font-bold text-gray-100">{reg.playerNick}</div>
-                      {reg.playerName && <div className="text-xs text-gray-500">{reg.playerName}</div>}
-                    </div>
-                  </label>
-                ))}
-              </div>
-              
-              <div className="flex gap-4 pt-4">
-                <DiagonalButton
-                  onClick={handleGenerateClashRoyale}
-                  disabled={selectedTop8.length !== 8 || isGenerating}
-                >
-                  {isGenerating ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Confirmar y Generar Llave'}
-                </DiagonalButton>
-                <button
-                  onClick={() => {
-                    setIsSelectingTop8(false);
-                    setSelectedTop8([]);
-                    setMessage('');
-                  }}
-                  className="px-4 py-2 bg-gray-800 text-gray-300 hover:bg-gray-700 transition-colors"
-                >
-                  Cancelar
-                </button>
-              </div>
-            </div>
-          )}
 
           {matches.length > 0 && isAdmin && (
             <DiagonalButton onClick={handleDeleteMatches} disabled={isGenerating} variant="danger">
