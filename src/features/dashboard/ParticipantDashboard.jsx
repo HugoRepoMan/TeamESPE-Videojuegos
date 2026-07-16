@@ -11,7 +11,7 @@ import DiagonalButton from '../../components/ui/DiagonalButton';
 import SectionTitle from '../../components/ui/SectionTitle';
 
 export default function ParticipantDashboard() {
-  const { user, isAdmin } = useAuth();
+  const { user, isAdmin, isJuez } = useAuth();
   const [stats, setStats] = useState({
     totalInscriptions: 0,
     approvedPayments: 0,
@@ -168,6 +168,12 @@ export default function ParticipantDashboard() {
             <DiagonalButton to="/admin" className="bg-red-900 border-red-500">
               <Swords className="w-4 h-4 mr-2" />
               Panel de Administrador
+            </DiagonalButton>
+          )}
+          {isJuez && (
+            <DiagonalButton to="/juez" className="bg-blue-900 border-blue-500">
+              <Swords className="w-4 h-4 mr-2" />
+              Panel de Juez
             </DiagonalButton>
           )}
           <DiagonalButton to="/dashboard/registrations">

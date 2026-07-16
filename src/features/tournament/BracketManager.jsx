@@ -461,7 +461,7 @@ export default function BracketManager() {
                           }`}
                         >
                           <span className="text-gray-200 truncate">
-                            {match.playerAName || 'Por definir'}
+                            {match.playerAName || (match.round === 1 && match.status === 'walkover' ? 'LIBRE (Pase Directo)' : 'Por definir')}
                           </span>
                           <span className="font-bold text-gray-100">{match.playerAScore || 0}</span>
                         </div>
@@ -473,7 +473,7 @@ export default function BracketManager() {
                           }`}
                         >
                           <span className="text-gray-200 truncate">
-                            {match.playerBName || 'Por definir'}
+                            {match.playerBName || (match.round === 1 && match.status === 'walkover' ? 'LIBRE (Pase Directo)' : 'Por definir')}
                           </span>
                           <span className="font-bold text-gray-100">{match.playerBScore || 0}</span>
                         </div>

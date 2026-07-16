@@ -62,35 +62,51 @@ export function generateBracket(players) {
   const shuffled = shuffleArray(players);
   const size = nextPowerOf2(shuffled.length);
   const totalRounds = Math.log2(size);
+  const numByes = size - shuffled.length;
+  const numMatchesRound1 = size / 2;
 
-  // Pad with BYE slots
-  const padded = [...shuffled];
-  while (padded.length < size) {
-    padded.push(null); // null represents a BYE
+  // Determine which matches in round 1 get a BYE
+  const matchHasBye = Array(numMatchesRound1).fill(false);
+  let byesAssigned = 0;
+  while (byesAssigned < numByes) {
+    const randomIndex = Math.floor(Math.random() * numMatchesRound1);
+    if (!matchHasBye[randomIndex]) {
+      matchHasBye[randomIndex] = true;
+      byesAssigned++;
+    }
   }
-  
-  // Shuffle again to randomly distribute BYEs
-  const seeded = shuffleArray(padded);
 
   const matches = [];
   let matchIndex = 0;
+  let playerIndex = 0;
 
   // Build round 1 matches
   const round1 = [];
-  for (let i = 0; i < seeded.length; i += 2) {
-    const playerA = seeded[i];
-    const playerB = seeded[i + 1];
-    const isBye = playerA === null || playerB === null;
-    const byeWinner = playerA === null ? playerB : playerA;
+  for (let i = 0; i < numMatchesRound1; i++) {
+    const hasBye = matchHasBye[i];
+    
+    // playerA is always a real player assigned from the shuffled list
+    const realPlayer = shuffled[playerIndex++];
+    
+    // playerB is a real player OR null (BYE)
+    let otherPlayer = null;
+    if (!hasBye) {
+      otherPlayer = shuffled[playerIndex++];
+    }
+
+    // Randomize whether the BYE is in slot A or B for visual variance
+    const swap = hasBye && Math.random() < 0.5;
+    const finalPlayerA = swap ? null : realPlayer;
+    const finalPlayerB = swap ? realPlayer : otherPlayer;
 
     const match = {
       matchIndex,
       round: 1,
-      bracketPosition: i / 2,
-      playerA,
-      playerB,
-      winnerId: isBye ? byeWinner.id : null,
-      status: isBye ? 'walkover' : 'scheduled',
+      bracketPosition: i,
+      playerA: finalPlayerA,
+      playerB: finalPlayerB,
+      winnerId: hasBye ? realPlayer.id : null,
+      status: hasBye ? 'walkover' : 'scheduled',
     };
     matches.push(match);
     round1.push(match);

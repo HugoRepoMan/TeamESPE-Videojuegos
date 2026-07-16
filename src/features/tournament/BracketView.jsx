@@ -111,7 +111,7 @@ export default function BracketView() {
                                 : 'text-gray-300'
                             }`}
                           >
-                            <span className="truncate pr-2">{match.playerAName || 'Por definir'}</span>
+                            <span className="truncate pr-2">{match.playerAName || (match.round === 1 && match.status === 'walkover' ? 'LIBRE' : 'Por definir')}</span>
                             <span className="font-bold">{match.playerAScore || 0}</span>
                           </div>
                           <div
@@ -121,7 +121,7 @@ export default function BracketView() {
                                 : 'text-gray-300'
                             }`}
                           >
-                            <span className="truncate pr-2">{match.playerBName || 'Por definir'}</span>
+                            <span className="truncate pr-2">{match.playerBName || (match.round === 1 && match.status === 'walkover' ? 'LIBRE' : 'Por definir')}</span>
                             <span className="font-bold">{match.playerBScore || 0}</span>
                           </div>
                         </div>
