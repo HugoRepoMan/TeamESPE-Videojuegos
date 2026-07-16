@@ -25,7 +25,7 @@ const COST_PER_DISCIPLINE = 2.0;
 export default function RegistrationsPanel() {
   const { user } = useAuth();
   
-  const deadline = new Date('2026-07-16T12:00:00-05:00');
+  const deadline = new Date('2026-07-16T13:30:00-05:00');
   const isClosed = new Date() > deadline;
 
   const [registrations, setRegistrations] = useState([]);
@@ -206,8 +206,8 @@ export default function RegistrationsPanel() {
           </h3>
           <p className="text-gray-300 mt-1 text-sm leading-relaxed">
             {isClosed 
-              ? 'El plazo para inscribirse ha finalizado el 16 de Julio de 2026 al medio día (12:00 PM).'
-              : 'Las inscripciones solo se podrán realizar hasta el 16 de Julio de 2026 a las 12:00 PM (Medio Día).'
+              ? 'El plazo para inscribirse ha finalizado el 16 de Julio de 2026 a la 1:30 PM.'
+              : 'Las inscripciones solo se podrán realizar hasta el 16 de Julio de 2026 a las 1:30 PM.'
             }
           </p>
         </div>

@@ -83,8 +83,8 @@ function CountdownTimer() {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
   useEffect(() => {
-    // 17 de Julio de 2026 a las 09:00:00
-    const targetDate = new Date('2026-07-17T09:00:00').getTime();
+    // 16 de Julio de 2026 a las 13:30:00
+    const targetDate = new Date('2026-07-16T13:30:00-05:00').getTime();
 
     const interval = setInterval(() => {
       const now = new Date().getTime();
@@ -240,7 +240,7 @@ export default function LandingPage() {
           
           {/* Top Badge */}
           <div className="inline-flex items-center gap-2 bg-hud-surface/50 border border-hud-accent/30 px-4 py-2 mb-8 backdrop-blur-sm shadow-[0_0_10px_rgba(227,0,43,0.2)]">
-            {new Date() > new Date('2026-07-16T12:00:00-05:00') ? (
+            {new Date() > new Date('2026-07-16T13:30:00-05:00') ? (
               <>
                 <span className="w-2 h-2 bg-gray-500 rounded-full" />
                 <span className="text-gray-400 font-bold text-xs uppercase tracking-[0.2em]">Inscripciones Cerradas</span>
