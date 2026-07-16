@@ -247,8 +247,8 @@ export default function LandingPage() {
               </>
             ) : (
               <>
-                <span className="w-2 h-2 bg-hud-accent rounded-full animate-pulse" />
-                <span className="text-hud-accent font-bold text-xs uppercase tracking-[0.2em]">Abiertas hasta el 16 de Julio (12:00 PM)</span>
+                <span className="w-2 h-2 bg-hud-accent rounded-full animate-pulse-fast shadow-[0_0_8px_rgba(227,0,43,0.8)]" />
+                <span className="text-hud-accent font-bold text-xs uppercase tracking-[0.2em]">Abiertas hasta el 16 de Julio (1:30 PM)</span>
               </>
             )}
           </div>
