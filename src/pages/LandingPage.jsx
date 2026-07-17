@@ -33,15 +33,15 @@ const SCHEDULE = [
   },
   { 
     day: 'Finales - Lab 1', 
-    date: '17 Jul 2026 • 14:00 (2 PM)', 
+    date: '17 Jul 2026 • 13:30 (1:30 PM)', 
     events: [
-      'League of Legends',
-      'Minecraft',
-      'Clash Royale',
-      'Fortnite',
-      'Dragon Ball Sparking Zero',
-      'FIFA 26',
-      'Mortal Kombat'
+      '13:30 - 14:15 | League of Legends (Bo3)',
+      '14:15 - 14:25 | Clash Royale (Bo3)',
+      '14:25 - 14:40 | Minecraft (Bo3)',
+      '14:40 - 14:55 | Fortnite (Bo3)',
+      '14:55 - 15:10 | Dragon Ball Sparking Zero (Bo3)',
+      '15:10 - 15:20 | Mortal Kombat (Bo3)',
+      '15:20 - 15:50 | FIFA 26 (Bo3)'
     ] 
   }
 ];
