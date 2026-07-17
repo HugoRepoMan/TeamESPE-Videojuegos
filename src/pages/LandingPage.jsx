@@ -36,12 +36,12 @@ const SCHEDULE = [
     date: '17 Jul 2026 • 13:30 (1:30 PM)', 
     events: [
       '13:30 - 14:15 | League of Legends (Bo3)',
-      '14:15 - 14:25 | Clash Royale (Bo3)',
-      '14:25 - 14:40 | Minecraft (Bo3)',
-      '14:40 - 14:55 | Fortnite (Bo3)',
-      '14:55 - 15:10 | Dragon Ball Sparking Zero (Bo3)',
-      '15:10 - 15:20 | Mortal Kombat (Bo3)',
-      '15:20 - 15:50 | FIFA 26 (Bo3)'
+      '13:30 - 14:00 | FIFA 26 (Bo3)',
+      '13:30 - 13:45 | Fortnite (Bo3)',
+      '14:15 - 14:30 | Minecraft (Bo3)',
+      '14:30 - 14:40 | Clash Royale (Bo3)',
+      '14:40 - 14:55 | Dragon Ball Sparking Zero (Bo3)',
+      '14:55 - 15:10 | Mortal Kombat (Bo3)'
     ] 
   }
 ];
