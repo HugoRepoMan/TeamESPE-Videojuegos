@@ -6,6 +6,7 @@ import HudCard from '../components/ui/HudCard';
 import GameBadge from '../components/ui/GameBadge';
 import SectionTitle from '../components/ui/SectionTitle';
 import DiagonalButton from '../components/ui/DiagonalButton';
+import FixButton from '../components/FixButton';
 
 const DISCIPLINES = [
   { id: 'clash-royale', name: 'Clash Royale', mode: '1v1', slug: 'clash-royale' },
@@ -524,6 +525,7 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+      <FixButton />
     </div>
   );
 }
