@@ -5,14 +5,15 @@ import { getStorage } from 'firebase/storage';
 import { initializeAppCheck, ReCaptchaV3Provider } from 'firebase/app-check';
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL,
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "AIzaSyCgSsDx9LYl5ayXbd8ESUdnQYcsPX66xJE",
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "teamespegames.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "teamespegames",
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "teamespegames.firebasestorage.app",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "223111677867",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "1:223111677867:web:dcaf5954ac9b650162b4ee",
+  databaseURL: import.meta.env.VITE_FIREBASE_DATABASE_URL || "https://teamespegames-default-rtdb.firebaseio.com",
 };
+
 
 const app = initializeApp(firebaseConfig);
 
@@ -21,7 +22,7 @@ const app = initializeApp(firebaseConfig);
 // For local development without reCAPTCHA, you would normally use CustomProvider or debug tokens.
 let appCheck;
 if (typeof window !== 'undefined') {
-  const reCaptchaKey = import.meta.env.VITE_RECAPTCHA_V3_SITE_KEY;
+  const reCaptchaKey = import.meta.env.VITE_RECAPTCHA_V3_SITE_KEY || "6Lf1iUEtAAAAAO4L8ylLojIt7CebdTmazgxMpBcJ";
 
   if (!reCaptchaKey) {
     // In development without a reCAPTCHA key, App Check is not enforced.
